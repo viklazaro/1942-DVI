@@ -2,16 +2,24 @@
 
 Proyecto del juego 1942 realizado por:
 
-  -
-  -
-  -
-  -
+  -Jose Antonio Bernal
+  -Milagros del Rocío Peña Quineche
+  -Víctor García Rodríguez
+  -Víctor Reviejo Reviejo
   
- HAY QUE MIRAR ESTE GAMEPLAY PARA VER COMO TENEMOS QUE HACER EL JUEGO
- https://www.youtube.com/watch?v=AlXf77Hheeo
- 
+1942 es un juego perteneciente al género shoot 'em up, del estilo de los clásicos mars invaders y similares. Fue lanzado por Capcom para recreativa en 1984. El juego se ambienta en la Guerra del Pacífico. El objetivo es llegar a Tokyo y destruir toda la flota aérea.
 
-https://www.spriters-resource.com/arcade/1942/ -> Todos los sprites que necesitamos.
+El juego incluía 8 mundos con 4 niveles cada uno. En dichos niveles el jugador tenía que llegar a un portaviones que se encontraba el final del recorrido. Durante su camino a dicho portaviones se enfrenta a diferentes tipos de enemigos, incluido uno de mayor tamaño a modo de boss del nivel.
+
+En principio nosotros desarrollaremos un nivel de dicho juego que incluya todos los enemigos disponibles. Usaremos el siguiente vídeo para sacar información sobre el juego, animaciones, tipos de enemigos y aguante de los mismos (cuantos impactos necesitan para morir), etc.
+  
+https://www.youtube.com/watch?v=AlXf77Hheeo
+
+De esta página sacaremos los recursos gráficos del juego
+
+https://www.spriters-resource.com/arcade/1942/ 
+
+(Esto de abajo creo que no se debería incluir en este documento)
 
 Tipos de enemigo:
 
