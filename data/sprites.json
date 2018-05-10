@@ -1,0 +1,14 @@
+{
+"player": {"sx":0,"sy":0,"cols":1,"tileW": 33,"tileH": 23,"frames": 20},
+"enemy1": {"sx":0,"sy":0,"cols":1,"tilew": 20,"tileh": 19,"frames":15},
+"enemy2": {"sx":0,"sy":18,"cols":1,"tilew":19,"tileh":19,"frames":15},
+"enemy3": {"sx":0,"sy":38,"cols":1,"tilew":19,"tileh":19,"frames":15},
+"enemy4": {"sx":0,"sy":57,"cols":1,"tilew":19,"tileh":19,"frames":15},
+"enemy5": {"sx":0,"sy":80,"cols":1,"tilew":19,"tileh":19,"frames":15},
+"enemy6": {"sx":153,"sy":80,"cols":1,"tilew":21,"tileh":19,"frames":15},
+"big_enemy": {"sx": 0, "sy":0, "cols":1, "tilew": 72, "tileH":55, "frames": 10},
+"boss": {"sx": 0, "sy":0, "cols":1, "tilew": 191, "tileH":86, "frames": 1},
+"explosion_boss": {"sx": 187, "sy":32, "cols":1, "tilew": 30, "tileH":27, "frames": 4},
+"bullet_player": {"sx": 137, "sy":5, "cols":1, "tilew": 23, "tileH":16, "frames": 1},
+"bullet_enemy": {"sx": 164, "sy":0, "cols":1, "tilew": 20, "tileH":22, "frames": 6}
+}
