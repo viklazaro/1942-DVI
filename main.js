@@ -15,14 +15,22 @@ window.addEventListener("load",function() {
 
     Q.scene("level1",function(stage) {
         
-        var player = stage.insert(new Q.Player());
+        //var player = stage.insert(new Q.Player());
         stage.insert(new Q.Background(this));
+        stage.insert(new Q.Player(this));
         //stage.insert(new Q.Repeater({ asset: "test.png"}));
         //stage.add("viewport").follow(player);
     });
 
     Q.load("test.png, airplane.png, airplane.json", function() {
         Q.compileSheets("airplane.png", "airplane.json");
+
+
+        Q.animations("player_anim", {
+            "stand": { frames: [1], rate: 1 / 10, loop: false },
+            "loop": { frames: [11, 12, 13, 14, 15, 16, 17, 18, 1], rate: 1 / 10, loop: false }
+        });
+
         Q.stageScene("level1");
     });
 
@@ -46,7 +54,7 @@ window.addEventListener("load",function() {
             this._super(p, {
                 sprite: "player_anim",
                 sheet: "player",
-                x: 110,
+                x: 200,
                 y: 0
             });
 
@@ -54,14 +62,14 @@ window.addEventListener("load",function() {
         },
 
         step: function(dt){
-                   
+                this.play("stand");
         }
 
     });
 
-    Q.animations("player_anim", {
+    /*Q.animations("player_anim", {
         "stand": { frames: [1], rate: 1 / 10, loop: false },
         "loop": { frames: [11, 12, 13, 14, 15, 16, 17, 18, 1], rate: 1 / 10, loop: false }
-    });
+    });*/
 });
 
