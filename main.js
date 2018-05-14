@@ -15,20 +15,25 @@ window.addEventListener("load",function() {
 
     Q.scene("level1",function(stage) {
         
-        //var player = stage.insert(new Q.Player());
+
         stage.insert(new Q.Background(this));
         stage.insert(new Q.Player(this));
-        //stage.insert(new Q.Repeater({ asset: "test.png"}));
-        //stage.add("viewport").follow(player);
+        //stage.insert(new Q.Enemy1(this)); //Si descomentas esto da error
+        stage.add("viewport").follow(Q("Player").first());
+
     });
 
-    Q.load("test.png, airplane.png, airplane.json", function() {
+    Q.load("test.png, airplane.png, airplane.json, sprites.json, enemies.png", function() {
         Q.compileSheets("airplane.png", "airplane.json");
-
+        Q.compileSheets("enemies.png", "sprites.json");
 
         Q.animations("player_anim", {
             "stand": { frames: [1], rate: 1 / 10, loop: false },
             "loop": { frames: [11, 12, 13, 14, 15, 16, 17, 18, 1], rate: 1 / 10, loop: false }
+        });
+
+        Q.animations("enemy1_anim", {
+            "stand": {frames: [1], rate: 1/10, loop: false}
         });
 
         Q.stageScene("level1");
@@ -54,11 +59,12 @@ window.addEventListener("load",function() {
             this._super(p, {
                 sprite: "player_anim",
                 sheet: "player",
-                x: 200,
-                y: 0
+                x: 110,
+                y: 0,
+                gravity: 0
             });
 
-            this.add("2d, platformerControls, animation");
+            this.add("2d, animation");
         },
 
         step: function(dt){
@@ -67,9 +73,25 @@ window.addEventListener("load",function() {
 
     });
 
-    /*Q.animations("player_anim", {
-        "stand": { frames: [1], rate: 1 / 10, loop: false },
-        "loop": { frames: [11, 12, 13, 14, 15, 16, 17, 18, 1], rate: 1 / 10, loop: false }
-    });*/
+    Q.Sprite.extend("Enemy1", {
+        init: function (p) {
+            this._super(p, {
+                sprite: "enem1_anim",
+                sheet: "enemy1",
+                x: 110,
+                y: 0,
+                gravity: 0
+            });
+
+            this.add("2d, animation");
+        },
+
+        step: function (dt) {
+            this.play("stand");
+
+        }
+    });
+
+   
 });
 
