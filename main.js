@@ -63,7 +63,7 @@ window.addEventListener("load",function() {
                 x: 110,
                 y: 0,
                 gravity: 0,
-                speed:55
+                speed: 70
             });
 
             this.add("2d, animation");
@@ -83,6 +83,9 @@ window.addEventListener("load",function() {
                 p.vy = -p.speed;
             }else if(Q.inputs['down']){
                 p.vy = p.speed;
+            }else{
+                p.vy = 0;
+                p.vx = 0;
             }
         },
 
