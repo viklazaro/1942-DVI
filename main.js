@@ -23,9 +23,10 @@ window.addEventListener("load",function() {
 
     });
 
-    Q.load("test.png, airplane.png, airplane.json, sprites.json, enemies.png", function() {
+    Q.load("test.png, airplane.png, airplane.json, sprites.json, enemies.png, anim.png", function() {
         Q.compileSheets("airplane.png", "airplane.json");
         Q.compileSheets("enemies.png", "sprites.json");
+        Q.compileSheets("anim.png", "sprites.json");
 
         Q.animations("player_anim", {
             "stand": { frames: [1], rate: 1 / 10, loop: false },
@@ -61,16 +62,52 @@ window.addEventListener("load",function() {
                 sheet: "player",
                 x: 110,
                 y: 0,
-                gravity: 0
+                gravity: 0,
+                speed:55
             });
 
             this.add("2d, animation");
+            Q.input.on("fire",this,"shoot");
         },
 
         step: function(dt){
-                this.play("stand");
+            this.play("stand");
+
+            var p = this.p;
+                    
+            if (Q.inputs['left']) {
+                p.vx = -p.speed;
+            }else if (Q.inputs['right']) {
+                p.vx = p.speed;
+            }else if(Q.inputs['up']){
+                p.vy = -p.speed;
+            }else if(Q.inputs['down']){
+                p.vy = p.speed;
+            }
+        },
+
+        shoot: function(){
+            this.stage.insert(new Q.Bullet_Player({x: this.p.x, y: this.p.y- this.p.w/2, vy: -100}));
         }
 
+    });
+
+    Q.Sprite.extend("Bullet_Player", {
+        init: function(p){
+            this._super(p, {
+                sheet: "bullet_player",
+                sprite: "bullet_player",
+                gravity: 0
+            });
+            
+            this.add("2d");
+        },
+        step: function(dt){
+            this.p.y += this.p.vy * dt;
+        },
+        sensor: function(collision){
+
+        }
     });
 
     Q.Sprite.extend("Enemy1", {
