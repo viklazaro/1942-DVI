@@ -18,7 +18,7 @@ window.addEventListener("load",function() {
 
         stage.insert(new Q.Background(this));
         stage.insert(new Q.Player(this));
-        //stage.insert(new Q.Enemy1(this)); //Si descomentas esto da error
+        stage.insert(new Q.Enemy1(this, 110, -50));
         stage.add("viewport").follow(Q("Player").first());
 
     });
@@ -39,6 +39,9 @@ window.addEventListener("load",function() {
 
         Q.stageScene("level1");
     });
+
+    Q.SPRITE_PLAYER = 1;
+    Q.SPRITE_ENEMY = 1;
 
     Q.Sprite.extend("Background",{
         init: function(p) {
@@ -63,7 +66,9 @@ window.addEventListener("load",function() {
                 x: 110,
                 y: 0,
                 gravity: 0,
-                speed: 70
+                speed: 70,
+                collisionMask: Q.SPRITE_DEFAULT,
+                type: Q.SPRITE_PLAYER
             });
 
             this.add("2d, animation");
@@ -114,23 +119,37 @@ window.addEventListener("load",function() {
     });
 
     Q.Sprite.extend("Enemy1", {
-        init: function (p) {
+        init: function (p, posX, posY) {
             this._super(p, {
-                sprite: "enem1_anim",
+                sprite: "enemy1_anim",
                 sheet: "enemy1",
-                x: 110,
-                y: 0,
-                gravity: 0
+                x: posX,
+                y: posY,
+                gravity: 0,
+                collisionMask: Q.SPRITE_DEFAULT,
+                type: Q.SPRITE_ENEMY
             });
 
             this.add("2d, animation");
+            this.on("bump.left,bump.right,bump.bottom",function(collision) {
+                if(collision.obj.isA("Bullet_Player")){
+                    this.destroy();
+                    collision.obj.destroy();
+                }
+                else if(collision.obj.isA("Player")){
+                    //Hay que llamar a la animacion de la explosión
+                    this.destroy();
+                    collision.obj.destroy();
+                }
+            });
         },
 
         step: function (dt) {
             this.play("stand");
-
         }
+
     });
+
 
    
 });
