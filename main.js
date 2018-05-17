@@ -18,15 +18,15 @@ window.addEventListener("load",function() {
 
         stage.insert(new Q.Background(this));
         stage.insert(new Q.Player(this));
-        stage.insert(new Q.Enemy1(this, 110, -50));
-        stage.add("viewport").follow(Q("Player").first());
+        stage.insert(new Q.Enemy1(this, 100, 400));
+        //stage.add("viewport").follow(Q("Player").first());
 
     });
 
     Q.load("test.png, airplane.png, airplane.json, sprites.json, enemies.png, anim.png", function() {
         Q.compileSheets("airplane.png", "airplane.json");
         Q.compileSheets("enemies.png", "sprites.json");
-        Q.compileSheets("anim.png", "sprites.json");
+        //Q.compileSheets("anim.png", "sprites.json");
 
         Q.animations("player_anim", {
             "stand": { frames: [1], rate: 1 / 10, loop: false },
@@ -49,8 +49,9 @@ window.addEventListener("load",function() {
             this._super(p, {
                 asset: "test.png",
                 x: 110,
-                y: -300,
-                vy: 10
+                y: -240,
+                vy: 10,
+                sensor: true
             });
         },
         step: function(dt) {
@@ -63,8 +64,8 @@ window.addEventListener("load",function() {
             this._super(p, {
                 sprite: "player_anim",
                 sheet: "player",
-                x: 110,
-                y: 0,
+                x: 100,
+                y: 450,
                 gravity: 0,
                 speed: 70,
                 collisionMask: Q.SPRITE_DEFAULT,
@@ -79,6 +80,16 @@ window.addEventListener("load",function() {
             this.play("stand");
 
             var p = this.p;
+
+            if(this.p.x < 0)
+                this.p.x = 0;
+            else if(this.p.x > 220)
+                this.p.x = 220;
+
+            if(this.p.y < 0)
+                this.p.y = 0;
+            else if(this.p.y > 480)
+                this.p.y = 480;
                     
             if (Q.inputs['left']) {
                 p.vx = -p.speed;
