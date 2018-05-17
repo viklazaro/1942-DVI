@@ -23,7 +23,7 @@ window.addEventListener("load",function() {
 
     });
 
-    Q.load("test.png, airplane.png, airplane.json, sprites.json, enemies.png, anim.png", function() {
+    Q.load("test.png, airplane.png, airplane.json, sprites.json, enemies.png, anim.png, anim.json", function() {
         Q.compileSheets("airplane.png", "airplane.json");
         Q.compileSheets("enemies.png", "sprites.json");
         Q.compileSheets("anim.png", "anim.json");
@@ -124,9 +124,6 @@ window.addEventListener("load",function() {
         },
         step: function(dt){
             this.p.y += this.p.vy * dt;
-        },
-        sensor: function(collision){
-
         }
     });
 
