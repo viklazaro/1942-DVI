@@ -14,19 +14,19 @@ window.addEventListener("load",function() {
         .enableSound();
 
     Q.scene("level1",function(stage) {
-        
-
-        stage.insert(new Q.Background(this));
         stage.insert(new Q.Player(this));
         stage.insert(new Q.Enemy1(this, 100, 400));
-        //stage.add("viewport").follow(Q("Player").first());
+    });
+
+    Q.scene("background",function(stage) {
+        stage.insert(new Q.Background(this));
 
     });
 
     Q.load("test.png, airplane.png, airplane.json, sprites.json, enemies.png, anim.png", function() {
         Q.compileSheets("airplane.png", "airplane.json");
         Q.compileSheets("enemies.png", "sprites.json");
-        //Q.compileSheets("anim.png", "sprites.json");
+        Q.compileSheets("anim.png", "anim.json");
 
         Q.animations("player_anim", {
             "stand": { frames: [1], rate: 1 / 10, loop: false },
@@ -37,7 +37,9 @@ window.addEventListener("load",function() {
             "stand": {frames: [1], rate: 1/10, loop: false}
         });
 
-        Q.stageScene("level1");
+        Q.stageScene("background", 0);
+        Q.stageScene("level1", 1);
+
     });
 
     Q.SPRITE_PLAYER = 1;
@@ -50,8 +52,7 @@ window.addEventListener("load",function() {
                 asset: "test.png",
                 x: 110,
                 y: -240,
-                vy: 10,
-                sensor: true
+                vy: 10
             });
         },
         step: function(dt) {
