@@ -1,7 +1,7 @@
 {
-	"enemy1": {"sx":0,"sy":0,"cols":1,"tilew": 20,"tileh": 19,"frames":15},
-	"enemy2": {"sx":0,"sy":18,"cols":2,"tilew":19,"tileh":19,"frames":15},
-	"enemy3": {"sx":0,"sy":38,"cols":1,"tilew":19,"tileh":19,"frames":15},
+	"enemy1": {"sx":0,"sy":0,"cols":0,"tilew": 20,"tileh": 19,"frames":15},
+	"enemy2": {"sx":0,"sy":18,"cols":0,"tilew":19,"tileh":19,"frames":15},
+	"enemy3": {"sx":0,"sy":38,"cols":0,"tilew":19,"tileh":19,"frames":15},
 	"enemy4": {"sx":0,"sy":57,"cols":1,"tilew":19,"tileh":19,"frames":15},
 	"enemy5": {"sx":0,"sy":80,"cols":1,"tilew":19,"tileh":19,"frames":15},
 	"enemy6": {"sx":153,"sy":80,"cols":1,"tilew":21,"tileh":19,"frames":15}

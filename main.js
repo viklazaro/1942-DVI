@@ -16,6 +16,7 @@ window.addEventListener("load",function() {
     Q.scene("level1",function(stage) {
         stage.insert(new Q.Player(this));
         stage.insert(new Q.Enemy1(this, 100, 400));
+        stage.insert(new Q.Enemy3(this, 0, 0));
     });
 
     Q.scene("background",function(stage) {
@@ -34,7 +35,13 @@ window.addEventListener("load",function() {
         });
 
         Q.animations("enemy1_anim", {
-            "stand": {frames: [1], rate: 1/10, loop: false}
+            "stand": {frames: [0], rate: 1/10, loop: false}
+        });
+
+        Q.animations("enemy3_anim", {
+            "down": {frames: [0], rate: 1/10, loop: false},
+            "loop": {frames: [8, 9], rate: 1/2, loop: false},
+            "up": {frames: [10], rate: 1/3, loop: false},
         });
 
         Q.stageScene("background", 0);
@@ -43,7 +50,7 @@ window.addEventListener("load",function() {
     });
 
     Q.SPRITE_PLAYER = 1;
-    Q.SPRITE_ENEMY = 1;
+    Q.SPRITE_ENEMY = 2;
 
     Q.Sprite.extend("Background",{
         init: function(p) {
@@ -155,6 +162,55 @@ window.addEventListener("load",function() {
 
         step: function (dt) {
             this.play("stand");
+        }
+
+    });
+
+    Q.Sprite.extend("Enemy3", {
+        init: function (p, posX, posY) {
+            this._super(p, {
+                sprite: "enemy3_anim",
+                sheet: "enemy3",
+                x: posX,
+                y: posY,
+                gravity: 0,
+                vx: 15,
+                vy: 20,
+                collisionMask: Q.SPRITE_DEFAULT,
+                type: Q.SPRITE_ENEMY,
+                back: false
+            });
+
+            this.add("2d, animation");
+            this.on("hit",this,"collision");
+        },
+
+        step: function (dt) {            
+            
+            if(this.p.y < 300 && !this.p.back){
+                this.play("down");
+                this.p.x += this.p.vx * dt;
+                this.p.y += (this.p.vy * dt) * (this.p.vy * dt) + (this.p.vy * dt) + 1;  
+            }else if(this.p. y > 300 && this.p.y < 310 && !this.p.back){
+                this.p.back = true;
+                this.play("loop");
+            }else{
+                this.play("up");
+                this.p.x += this.p.vx * dt;
+                this.p.y -= (this.p.vy * dt) * (this.p.vy * dt) + (this.p.vy * dt) + 1; 
+            }
+        },
+
+        collision: function(collision){
+            if(collision.obj.isA("Bullet_Player")){
+                    this.destroy();
+                    collision.obj.destroy();
+                }
+                else if(collision.obj.isA("Player")){
+                    //Hay que llamar a la animacion de la explosión
+                    this.destroy();
+                    collision.obj.destroy();
+                }
         }
 
     });
