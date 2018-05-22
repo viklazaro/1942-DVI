@@ -1,5 +1,6 @@
 {
 	"explosion_enemy": {"sx": 164, "sy":4, "cols":1, "tilew": 15, "tileH":16, "frames": 6},
+	"explosion_player": {"sx": 0, "sy":26, "cols":0, "tilew": 33, "tileH":32, "frames": 6},
 	"bullet_player": {"sx": 137, "sy":5, "cols":1, "tilew": 23, "tileH":16, "frames": 1},
 	"bullet_enemy": {"sx": 164, "sy":0, "cols":1, "tilew": 20, "tileH":22, "frames": 6}
 }
