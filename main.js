@@ -212,7 +212,7 @@ window.addEventListener("load",function() {
 
         collision: function(col){
             if(col.obj.isA("Bullet_Player")){
-                //this.stage.insert(new Q.Explosion({x: this.p.x, y: this.p.y- this.p.w/2}));
+                this.stage.insert(new Q.Explosion({x: this.p.x, y: this.p.y- this.p.w/2})); //ESTO ANTES ESTABA COMENTADO
                 this.destroy();
                 col.obj.destroy();
             }
@@ -228,12 +228,13 @@ window.addEventListener("load",function() {
     Q.Sprite.extend("Explosion", {
         init: function(p){
             this._super(p, {
-                sheet: "explosion_anim",
-                sprite: "explosion_enemy",
-                collisionMask: Q.SPRITE_NONE
+                sheet: "explosion_enemy",
+                sprite: "explosion_anim"
+                //collisionMask: Q.SPRITE_NONE
             });
 
-            this.add("2d, animation");
+            //this.add("2d, animation");
+            this.add("animation");
         },
         step: function(dt){
             this.play("explosion");
