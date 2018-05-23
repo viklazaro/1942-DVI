@@ -41,11 +41,11 @@ window.addEventListener("load",function() {
         Q.animations("enemy3_anim", {
             "down": {frames: [0], rate: 1/10, loop: false},
             "loop": {frames: [8, 9], rate: 1/2, loop: false},
-            "up": {frames: [10, 11], rate: 1/3, loop: false},
+            "up": {frames: [10, 11], rate: 1/3, loop: false}
         });
 
         Q.animations("explosion_anim", {
-            "explosion": {frames: [0, 1, 2, 3, 4, 5], rate: 1/3, loop: false}
+            "explosion": {frames: [0, 1, 2, 3, 4, 5], rate: 1/3, loop: false, trigger: "exploted"}
         });
 
         Q.stageScene("background", 0);
@@ -235,9 +235,14 @@ window.addEventListener("load",function() {
 
             //this.add("2d, animation");
             this.add("animation");
+            this.play("explosion");
+            this.on("exploted",this,function() {
+                this.destroy();
+            });
+
         },
         step: function(dt){
-            this.play("explosion");
+
         }
     });    
    
