@@ -15,7 +15,7 @@ window.addEventListener("load",function() {
 
     Q.scene("level1",function(stage) {
         stage.insert(new Q.Player(this));
-        //stage.insert(new Q.Enemy1(this, 100, 400));
+        stage.insert(new Q.Enemy1(this, 100, 400));
         stage.insert(new Q.Enemy3(this, 0, 0));
     });
 
@@ -35,7 +35,9 @@ window.addEventListener("load",function() {
         });
 
         Q.animations("enemy1_anim", {
-            "stand": {frames: [0], rate: 1/10, loop: false}
+            //"stand": {frames: [0], rate: 1/10, loop: false},
+            "up": {frames: [0], rate: 1/10, loop:false},
+            "loop": {frames: [1,2,3,4,5,6,7], rate: 1/10, loop: false}
         });
 
         Q.animations("enemy3_anim", {
@@ -46,6 +48,10 @@ window.addEventListener("load",function() {
 
         Q.animations("explosion_anim", {
             "explosion": {frames: [0, 1, 2, 3, 4, 5], rate: 1/3, loop: false, trigger: "exploted"}
+        });
+
+        Q.animations("explosion_anim_player", {
+           "explosion_jugador": {frames: [0, 1, 2, 3, 4, 5], rate: 1/3, loop:false, trigger: "exploted"}
         });
 
         Q.stageScene("background", 0);
@@ -135,6 +141,29 @@ window.addEventListener("load",function() {
         },
         step: function(dt){
             this.p.y += this.p.vy * dt;
+
+            if(this.p.y > Q.height || this.p.y < 0 || this.p.x > Q.width || this.p.x < 0){
+                this.destroy();
+            }
+        }
+    });
+
+    Q.Sprite.extend("Bullet_Enemy", {
+       init: function (p) {
+           this._super(p, {
+               sheet:"bullet_enemy",
+               sprite: "bullet_enemy",
+               gravity: 0
+           });
+
+       },
+
+        step: function (dt) {
+            this.p.y += this.p.vy * dt;
+
+            if(this.p.y > Q.height || this.p.y < 0 || this.p.x > Q.width || this.p.x < 0){
+                this.destroy();
+            }
         }
     });
 
@@ -145,27 +174,50 @@ window.addEventListener("load",function() {
                 sheet: "enemy1",
                 x: posX,
                 y: posY,
+                vx: 20,
+                vy: 20,
                 gravity: 0,
+                gira: false,
+                disparo: false,
                 collisionMask: Q.SPRITE_DEFAULT,
                 type: Q.SPRITE_ENEMY
             });
 
-            this.add("2d, animation");
-            this.on("bump.left,bump.right,bump.bottom",function(collision) {
-                if(collision.obj.isA("Bullet_Player")){
-                    this.destroy();
-                    collision.obj.destroy(); 
-                }
-                else if(collision.obj.isA("Player")){
-                    //Hay que llamar a la animacion de la explosión
-                    this.destroy();
-                    collision.obj.destroy();
-                }
-            });
+            this.add("animation");
+            this.on("hit",this,"collision");
         },
 
         step: function (dt) {
-            this.play("stand");
+            //this.stage.insert(new Q.Bullet_Enemy({x: this.p.x, y: this.p.y- this.p.w/2, vy: -100}));
+
+            this.stage.collide(this);
+
+            if(this.p.y < Q.height/2 && !this.p.gira){
+                this.play("loop");
+                this.p.y -= this.p.vy * dt;
+                this.p.gira = true;
+            }
+            else{
+                this.play("up");
+                this.p.y -= this.p.vy * dt;
+            }
+
+            if(this.p.y > Q.height || this.p.y < 0 || this.p.x > Q.width || this.p.x < 0){
+                this.destroy();
+            }
+        },
+
+        collision: function(col){
+            if(col.obj.isA("Bullet_Player")){
+                this.stage.insert(new Q.Explosion({x: this.p.x, y: this.p.y- this.p.w/2})); //ESTO ANTES ESTABA COMENTADO
+                this.destroy();
+                col.obj.destroy();
+            }
+            else if(col.obj.isA("Player")){
+                this.stage.insert(new Q.Explosion_P({x: this.p.x, y: this.p.y- this.p.w/2}));//Hay que llamar a la animacion de la explosión
+                this.destroy();
+                col.obj.destroy();
+            }
         }
 
     });
@@ -217,7 +269,7 @@ window.addEventListener("load",function() {
                 col.obj.destroy();
             }
             else if(col.obj.isA("Player")){
-                //Hay que llamar a la animacion de la explosión
+                this.stage.insert(new Q.Explosion_P({x: this.p.x, y: this.p.y- this.p.w/2}));//Hay que llamar a la animacion de la explosión
                 this.destroy();
                 col.obj.destroy();
             }
@@ -244,7 +296,22 @@ window.addEventListener("load",function() {
         step: function(dt){
 
         }
-    });    
+    });
+
+    Q.Sprite.extend("Explosion_P", {
+       init: function (p) {
+           this._super(p, {
+               sheet: "explosion_player",
+               sprite: "explosion_anim_player"
+           });
+
+           this.add("animation");
+           this.play("explosion_jugador");
+           this.on("exploted",this,function() {
+               this.destroy();
+           });
+       }
+    });
    
 });
 

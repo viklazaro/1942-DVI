@@ -1,5 +1,5 @@
 {
-	"enemy1": {"sx":0,"sy":0,"cols":0,"tilew": 20,"tileh": 19,"frames":15},
+	"enemy1": {"sx":0,"sy":0,"cols":0,"tilew": 19,"tileh": 19,"frames":15},
 	"enemy2": {"sx":0,"sy":18,"cols":0,"tilew":19,"tileh":19,"frames":15},
 	"enemy3": {"sx":0,"sy":38,"cols":0,"tilew":19,"tileh":19,"frames":15},
 	"enemy4": {"sx":0,"sy":57,"cols":1,"tilew":19,"tileh":19,"frames":15},
