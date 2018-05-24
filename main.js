@@ -16,6 +16,7 @@ window.addEventListener("load",function() {
     Q.scene("level1",function(stage) {
         stage.insert(new Q.Player(this));
         stage.insert(new Q.Enemy1(this, 100, 400));
+        stage.insert(new Q.Enemy2(this, 220, 50));
         stage.insert(new Q.Enemy3(this, 0, 0));
     });
 
@@ -38,6 +39,10 @@ window.addEventListener("load",function() {
             //"stand": {frames: [0], rate: 1/10, loop: false},
             "up": {frames: [0], rate: 1/10, loop:false},
             "loop": {frames: [1,2,3,4,5,6,7], rate: 1/10, loop: false}
+        });
+
+        Q.animations("enemy2_anim", {
+           "left": {frames: [0], rate: 1/10, loop: false}
         });
 
         Q.animations("enemy3_anim", {
@@ -185,7 +190,7 @@ window.addEventListener("load",function() {
         }
     });
 
-    Q.Sprite.extend("Enemy1", {
+    Q.Sprite.extend("Enemy1", { //Estos enemigos sueben hacia arriba
         init: function (p, posX, posY) {
                 this._super(p, {
                     sprite: "enemy1_anim",
@@ -214,7 +219,7 @@ window.addEventListener("load",function() {
 
             this.p.tiempo += dt;
 
-            if(this.p.tiempo > 0.60){
+            if(this.p.tiempo > 0.70){
                 this.stage.insert(new Q.Bullet_Enemy({x: this.p.x, y: this.p.y- this.p.w/2, vy: -100, direccion: "arriba"}));
                 this.p.tiempo = 0;
             }
@@ -251,9 +256,57 @@ window.addEventListener("load",function() {
 
     });
 
+    Q.Sprite.extend("Enemy2", { //Estos enemigos se mueven hacia la izquierda
+        init: function (p, posX, posY) {
+            this._super(p, {
+                sprite: "enemy2_anim",
+                sheet: "enemy2",
+                x: posX,
+                y: posY,
+                gravity: 0,
+                vx: 20,
+                vy: 20,
+                tiempo: 0,
+                type: Q.SPRITE_ENEMY
+            });
 
+            this.add("animation");
+            this.on("hit", this, "collision");
+        },
 
-    Q.Sprite.extend("Enemy3", {
+        step: function (dt) {
+            this.stage.collide(this);
+
+            this.p.tiempo += dt;
+
+            this.p.x -= this.p.vx * dt;
+            if(this.p.tiempo > 0.70){
+                this.stage.insert(new Q.Bullet_Enemy({x: this.p.x, y: this.p.y- this.p.w/2, vy: -100, direccion: "abajo"}));
+                this.p.tiempo = 0;
+            }
+
+            this.play("left");
+
+            if(this.p.y > Q.height || this.p.y < 0 || this.p.x > Q.width || this.p.x < 0){
+                this.destroy();
+            }
+        },
+
+        collision: function(col){
+            if(col.obj.isA("Bullet_Player")){
+                this.stage.insert(new Q.Explosion({x: this.p.x, y: this.p.y- this.p.w/2})); //ESTO ANTES ESTABA COMENTADO
+                this.destroy();
+                col.obj.destroy();
+            }
+            else if(col.obj.isA("Player")){
+                this.stage.insert(new Q.Explosion_P({x: this.p.x, y: this.p.y- this.p.w/2}));//Hay que llamar a la animacion de la explosión
+                this.destroy();
+                col.obj.destroy();
+            }
+        }
+    });
+
+    Q.Sprite.extend("Enemy3", { //Estos enemigos bajan por la pantalla y en cierto momento cambian su direccion y empiezan a subir por la pantalla
         init: function (p, posX, posY) {
             this._super(p, {
                 sprite: "enemy3_anim",
@@ -277,14 +330,9 @@ window.addEventListener("load",function() {
 
             this.p.tiempo += dt;
 
-            /*if(this.p.tiempo > 0.60){
-                this.stage.insert(new Q.Bullet_Enemy({x: this.p.x, y: this.p.y- this.p.w/2, vy: -100, direccion: "arriba"}));
-                this.p.tiempo = 0;
-            }*/
-
             if(this.p.y < 300 && !this.p.back){
                 this.play("down");
-                if(this.p.tiempo > 0.60){
+                if(this.p.tiempo > 0.70){
                     this.stage.insert(new Q.Bullet_Enemy({x: this.p.x, y: this.p.y- this.p.w/2, vy: -100, direccion: "abajo"}));
                     this.p.tiempo = 0;
                 }
@@ -295,7 +343,7 @@ window.addEventListener("load",function() {
                 this.play("loop");
             }else{
                 this.play("up");
-                if(this.p.tiempo > 0.60){
+                if(this.p.tiempo > 0.70){
                     this.stage.insert(new Q.Bullet_Enemy({x: this.p.x, y: this.p.y- this.p.w/2, vy: -100, direccion: "arriba"}));
                     this.p.tiempo = 0;
                 }
