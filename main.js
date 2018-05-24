@@ -86,15 +86,18 @@ window.addEventListener("load",function() {
                 y: 450,
                 gravity: 0,
                 speed: 70,
+                vida: 3,
                 collisionMask: Q.SPRITE_DEFAULT,
                 type: Q.SPRITE_PLAYER
             });
 
             this.add("2d, animation");
             Q.input.on("fire",this,"shoot");
+            this.on("hit",this,"collision");
         },
 
         step: function(dt){
+            this.stage.collide(this);
             this.play("stand");
 
             var p = this.p;
@@ -125,6 +128,17 @@ window.addEventListener("load",function() {
 
         shoot: function(){
             this.stage.insert(new Q.Bullet_Player({x: this.p.x, y: this.p.y- this.p.w/2, vy: -100}));
+        },
+
+        collision: function(col){
+            if(col.obj.isA("Bullet_Enemy")){
+                col.obj.destroy();
+                this.p.vida--;
+                if(this.p.vida == 0) {
+                    this.stage.insert(new Q.Explosion_P({x: this.p.x, y: this.p.y - this.p.w / 2}));
+                    this.destroy();
+                }
+            }
         }
 
     });
@@ -137,7 +151,7 @@ window.addEventListener("load",function() {
                 gravity: 0
             });
             
-            this.add("2d");
+            //this.add("2d");
         },
         step: function(dt){
             this.p.y += this.p.vy * dt;
@@ -149,17 +163,21 @@ window.addEventListener("load",function() {
     });
 
     Q.Sprite.extend("Bullet_Enemy", {
-       init: function (p) {
+       init: function (p, dir) {
            this._super(p, {
                sheet:"bullet_enemy",
                sprite: "bullet_enemy",
-               gravity: 0
+               gravity: 0,
+               direccion: dir
            });
 
        },
 
         step: function (dt) {
-            this.p.y += this.p.vy * dt;
+            if(this.p.direccion == "arriba")
+                this.p.y += this.p.vy * dt;
+            else if(this.p.direccion == "abajo")
+                this.p.y -= this.p.vy * dt;
 
             if(this.p.y > Q.height || this.p.y < 0 || this.p.x > Q.width || this.p.x < 0){
                 this.destroy();
@@ -169,22 +187,24 @@ window.addEventListener("load",function() {
 
     Q.Sprite.extend("Enemy1", {
         init: function (p, posX, posY) {
-            this._super(p, {
-                sprite: "enemy1_anim",
-                sheet: "enemy1",
-                x: posX,
-                y: posY,
-                vx: 20,
-                vy: 20,
-                gravity: 0,
-                gira: false,
-                disparo: false,
-                collisionMask: Q.SPRITE_DEFAULT,
-                type: Q.SPRITE_ENEMY
-            });
+                this._super(p, {
+                    sprite: "enemy1_anim",
+                    sheet: "enemy1",
+                    x: posX,
+                    y: posY,
+                    vx: 20,
+                    vy: 20,
+                    gravity: 0,
+                    gira: false,
+                    disparo: false,
+                    tiempo: 0,
+                    collisionMask: Q.SPRITE_DEFAULT,
+                    type: Q.SPRITE_ENEMY
+                });
 
-            this.add("animation");
-            this.on("hit",this,"collision");
+                this.add("animation");
+                this.on("hit",this,"collision");
+
         },
 
         step: function (dt) {
@@ -192,10 +212,19 @@ window.addEventListener("load",function() {
 
             this.stage.collide(this);
 
+            this.p.tiempo += dt;
+
+            if(this.p.tiempo > 0.60){
+                this.stage.insert(new Q.Bullet_Enemy({x: this.p.x, y: this.p.y- this.p.w/2, vy: -100, direccion: "arriba"}));
+                this.p.tiempo = 0;
+            }
+
+
             if(this.p.y < Q.height/2 && !this.p.gira){
                 this.play("loop");
                 this.p.y -= this.p.vy * dt;
                 this.p.gira = true;
+                this.play("up");
             }
             else{
                 this.play("up");
@@ -222,6 +251,8 @@ window.addEventListener("load",function() {
 
     });
 
+
+
     Q.Sprite.extend("Enemy3", {
         init: function (p, posX, posY) {
             this._super(p, {
@@ -232,6 +263,7 @@ window.addEventListener("load",function() {
                 gravity: 0,
                 vx: 20,
                 vy: 20,
+                tiempo: 0,
                 type: Q.SPRITE_ENEMY,
                 back: false
             });
@@ -243,8 +275,19 @@ window.addEventListener("load",function() {
         step: function (dt) {  
             this.stage.collide(this);
 
+            this.p.tiempo += dt;
+
+            /*if(this.p.tiempo > 0.60){
+                this.stage.insert(new Q.Bullet_Enemy({x: this.p.x, y: this.p.y- this.p.w/2, vy: -100, direccion: "arriba"}));
+                this.p.tiempo = 0;
+            }*/
+
             if(this.p.y < 300 && !this.p.back){
                 this.play("down");
+                if(this.p.tiempo > 0.60){
+                    this.stage.insert(new Q.Bullet_Enemy({x: this.p.x, y: this.p.y- this.p.w/2, vy: -100, direccion: "abajo"}));
+                    this.p.tiempo = 0;
+                }
                 this.p.x += this.p.vx * dt;
                 this.p.y += (this.p.vy * dt) * (this.p.vy * dt) + (this.p.vy * dt) + 1;  
             }else if(this.p.y > 300 && this.p.y < 310 && !this.p.back){
@@ -252,6 +295,10 @@ window.addEventListener("load",function() {
                 this.play("loop");
             }else{
                 this.play("up");
+                if(this.p.tiempo > 0.60){
+                    this.stage.insert(new Q.Bullet_Enemy({x: this.p.x, y: this.p.y- this.p.w/2, vy: -100, direccion: "arriba"}));
+                    this.p.tiempo = 0;
+                }
                 this.p.x += this.p.vx * dt;
                 this.p.y -= (this.p.vy * dt) * (this.p.vy * dt) + (this.p.vy * dt) + 1; 
             }
