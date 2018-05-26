@@ -18,6 +18,7 @@ window.addEventListener("load", function() {
         stage.insert(new Q.Enemy1(this, 100, 400));
         stage.insert(new Q.Enemy2(this, 220, 50));
         stage.insert(new Q.Enemy3(this, 0, 0));
+        stage.insert(new Q.Enemy7(this, 220, 240));
     });
 
     Q.scene("background", function(stage) {
@@ -49,7 +50,18 @@ window.addEventListener("load", function() {
         Q.animations("enemy3_anim", {
             "down": { frames: [0], rate: 1 / 10, loop: false },
             "loop": { frames: [8, 9], rate: 1 / 2, loop: false },
-            "up": { frames: [10, 11], rate: 1 / 3, loop: false }
+            "up": { frames: [10], rate: 1 / 3, loop: false }
+        });
+
+        Q.animations("enemy7_anim", {
+            "down_left": {frames: [15, 14, 13], rate: 1, loop: false},
+            "left": {frames: [12], rate: 1, loop: false},
+            "up_left": {frames: [11, 10, 9], rate: 1, loop: false},
+            "up": {frames: [8], rate: 1, loop: false},
+            "up_right": {frames: [7, 6, 5], rate: 1, loop: false},
+            "right": {frames: [4], rate: 1, loop: false},
+            "down_right": {frames: [3, 2, 1], rate: 1, loop: false},
+            "down": {frames: [0], rate: 1, loop: false}
         });
 
         Q.animations("boss_anim", {
@@ -371,6 +383,84 @@ window.addEventListener("load", function() {
                 col.obj.destroy();
             } else if (col.obj.isA("Player")) {
                 this.stage.insert(new Q.Explosion_P({ x: this.p.x, y: this.p.y - this.p.w / 2 })); //Hay que llamar a la animacion de la explosión
+                this.destroy();
+                col.obj.destroy();
+            }
+        }
+
+    });
+
+    Q.Sprite.extend("Enemy7", {
+        init: function (p, posX, posY) {
+            this._super(p, {
+                sprite: "enemy7_anim",
+                sheet: "enemy7",
+                x: posX,
+                y: posY,
+                gravity: 0,
+                type: Q.SPRITE_ENEMY,
+                t: 0,
+                count: 0,
+                down: false
+            });
+
+            this.add("animation");
+            this.on("hit", this, "collision");
+        },
+
+        step: function (dt) {  
+            this.stage.collide(this);
+
+            this.p.t += dt;
+
+            if(this.p.count < 7){
+                this.p.vx = (-50) * Math.sin(1 * this.p.t + 0);
+                this.p.vy = 50 * Math.sin(1 * this.p.t + Math.PI/2);
+
+                this.p.x += this.p.vx * dt;
+                this.p.y += this.p.vy * dt;
+                if(this.p.y > 240){
+                    if(this.p.x < 220 && this.p.x > 180){
+                        this.play("down_left");
+                    }else if(this.p.x < 180 && this.p.x > 175){
+                        this.play("left");
+                        this.p.count++;
+                    }else if(this.p.x < 175 && this.p.x > 125){
+                        this.play("up_left");
+                    }else if(this.p.x < 125 && this.p.x > 120){
+                        this.play("up");
+                    }
+                }else{
+                    if(this.p.x < 220 && this.p.x > 180){
+                        this.play("down_right");
+                    }else if(this.p.x < 180 && this.p.x > 175){
+                        this.play("right");
+                    }else if(this.p.x < 175 && this.p.x > 125){
+                        this.play("up_right");
+                        this.p.down = true;
+                    }else if(this.p.x < 125 && this.p.x > 120 && this.p.down){
+                        this.play("down");
+                        this.p.down = false;
+                    }
+                }       
+            }else{
+                this.p.x += this.p.vx * dt;
+            }  
+
+            if(this.p.y > Q.height || this.p.y < 0 || this.p.x > Q.width || this.p.x < 0){
+                this.destroy();
+            }
+
+        },
+
+        collision: function(col){
+            if(col.obj.isA("Bullet_Player")){
+                this.stage.insert(new Q.Explosion({x: this.p.x, y: this.p.y- this.p.w/2})); //ESTO ANTES ESTABA COMENTADO
+                this.destroy();
+                col.obj.destroy();
+            }
+            else if(col.obj.isA("Player")){
+                this.stage.insert(new Q.Explosion_P({x: this.p.x, y: this.p.y- this.p.w/2}));//Hay que llamar a la animacion de la explosión
                 this.destroy();
                 col.obj.destroy();
             }
