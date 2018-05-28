@@ -70,7 +70,7 @@ window.addEventListener("load", function() {
         });
 
         Q.animations("boss_explosion_anim", {
-            "explosion_boss": { frames: [0, 1, 2, 3], rate: 1 / 4, loop: false, trigger: "exploted" };
+            "explosion_boss": { frames: [0, 1, 2, 3], rate: 1 / 4, loop: false, trigger: "exploted" }
         });
 
         Q.animations("explosion_anim", {
@@ -468,7 +468,7 @@ window.addEventListener("load", function() {
 
     });
 
-    Q.sprite.extend("Boss", {
+    Q.Sprite.extend("Boss", {
         init: function(p, posX, posY) {
             this._super(p, {
                 sprite: "boss_anim",
@@ -531,7 +531,7 @@ window.addEventListener("load", function() {
                 col.obj.destroy();
             }
         }
-    })
+    });
 
     Q.Sprite.extend("Explosion", {
         init: function(p) {
@@ -569,7 +569,7 @@ window.addEventListener("load", function() {
         }
     });
 
-    Q.sprite.extend("Explosion_B", {
+    Q.Sprite.extend("Explosion_B", {
         init: function(p) {
             this._super(p, {
                 sheet: "boss",
