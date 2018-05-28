@@ -18,15 +18,16 @@ window.addEventListener("load", function() {
         stage.insert(new Q.Enemy1(this, 100, 400));
         stage.insert(new Q.Enemy2(this, 220, 50));
         stage.insert(new Q.Enemy3(this, 0, 0));
-        stage.insert(new Q.Enemy7(this, 220, 240));
+        //stage.insert(new Q.Enemy7(this, 0, 240, true)); //Hacia la derecha
+        stage.insert(new Q.Enemy7(this, 220, 240, false)); //Hacia la izquierda
     });
 
     Q.scene("background", function(stage) {
         stage.insert(new Q.Background(this));
-
+        Q.audio.play("music_main.mp3", { loop: true });
     });
 
-    Q.load("test.png, airplane.png, airplane.json, sprites.json, enemies.png, anim.png, anim.json, boss.png, boss.json", function() {
+    Q.load("test.png, airplane.png, airplane.json, sprites.json, enemies.png, anim.png, anim.json, boss.png, boss.json, music_main.mp3, shot_effect.mp3", function() {
         Q.compileSheets("airplane.png", "airplane.json");
         Q.compileSheets("enemies.png", "sprites.json");
         Q.compileSheets("anim.png", "anim.json");
@@ -54,14 +55,18 @@ window.addEventListener("load", function() {
         });
 
         Q.animations("enemy7_anim", {
-            "down_left": {frames: [15, 14, 13], rate: 1, loop: false},
+            "down_left_1": {frames: [15, 14, 13], rate: 1, loop: false},
             "left": {frames: [12], rate: 1, loop: false},
-            "up_left": {frames: [11, 10, 9], rate: 1, loop: false},
+            "up_left_1": {frames: [11, 10, 9], rate: 1, loop: false},
             "up": {frames: [8], rate: 1, loop: false},
-            "up_right": {frames: [7, 6, 5], rate: 1, loop: false},
+            "up_right_1": {frames: [7, 6, 5], rate: 1, loop: false},
             "right": {frames: [4], rate: 1, loop: false},
-            "down_right": {frames: [3, 2, 1], rate: 1, loop: false},
-            "down": {frames: [0], rate: 1, loop: false}
+            "down_right_1": {frames: [3, 2, 1], rate: 1, loop: false},
+            "down": {frames: [0], rate: 1, loop: false},
+            "down_right_2": {frames: [1, 2, 3], rate: 1, loop: false},
+            "up_right_2": {frames: [5, 6, 7], rate: 1, loop: false},
+            "up_left_2": {frames: [9, 10, 11], rate: 1, loop: false},
+            "down_left_2": {frames: [13, 14, 15], rate: 1, loop: false}
         });
 
         Q.animations("boss_anim", {
@@ -391,7 +396,7 @@ window.addEventListener("load", function() {
     });
 
     Q.Sprite.extend("Enemy7", {
-        init: function (p, posX, posY) {
+        init: function (p, posX, posY, dirR) {
             this._super(p, {
                 sprite: "enemy7_anim",
                 sheet: "enemy7",
@@ -401,7 +406,8 @@ window.addEventListener("load", function() {
                 type: Q.SPRITE_ENEMY,
                 t: 0,
                 count: 0,
-                down: false
+                down: false,
+                dir: dirR
             });
 
             this.add("animation");
@@ -414,35 +420,68 @@ window.addEventListener("load", function() {
             this.p.t += dt;
 
             if(this.p.count < 7){
-                this.p.vx = (-50) * Math.sin(1 * this.p.t + 0);
-                this.p.vy = 50 * Math.sin(1 * this.p.t + Math.PI/2);
+                if(!this.p.dir){
+                    this.p.vx = (-50) * Math.sin(1 * this.p.t + 0);
+                    this.p.vy = 50 * Math.sin(1 * this.p.t + Math.PI/2);
+                }else{
+                    this.p.vx = 50 * Math.sin(1 * this.p.t + 0);
+                    this.p.vy = (-50) * Math.sin(1 * this.p.t - Math.PI/2);
+                }
+                
 
                 this.p.x += this.p.vx * dt;
                 this.p.y += this.p.vy * dt;
-                if(this.p.y > 240){
-                    if(this.p.x < 220 && this.p.x > 180){
-                        this.play("down_left");
-                    }else if(this.p.x < 180 && this.p.x > 175){
-                        this.play("left");
-                        this.p.count++;
-                    }else if(this.p.x < 175 && this.p.x > 125){
-                        this.play("up_left");
-                    }else if(this.p.x < 125 && this.p.x > 120){
-                        this.play("up");
-                    }
+
+                if(!this.p.dir){
+                    if(this.p.y > 240){
+                        if(this.p.x < 220 && this.p.x > 180){
+                            this.play("down_left_1");
+                        }else if(this.p.x < 180 && this.p.x > 175){
+                            this.play("left");
+                            this.p.count++;
+                        }else if(this.p.x < 175 && this.p.x > 125){
+                            this.play("up_left_1");
+                        }else if(this.p.x < 125 && this.p.x > 120){
+                            this.play("up");
+                        }
+                    }else{
+                        if(this.p.x < 220 && this.p.x > 180){
+                            this.play("down_right_1");
+                        }else if(this.p.x < 180 && this.p.x > 175){
+                            this.play("right");
+                        }else if(this.p.x < 175 && this.p.x > 125){
+                            this.play("up_right_1");
+                            this.p.down = true;
+                        }else if(this.p.x < 125 && this.p.x > 120 && this.p.down){
+                            this.play("down");
+                            this.p.down = false;
+                        }
+                    }  
                 }else{
-                    if(this.p.x < 220 && this.p.x > 180){
-                        this.play("down_right");
-                    }else if(this.p.x < 180 && this.p.x > 175){
-                        this.play("right");
-                    }else if(this.p.x < 175 && this.p.x > 125){
-                        this.play("up_right");
-                        this.p.down = true;
-                    }else if(this.p.x < 125 && this.p.x > 120 && this.p.down){
-                        this.play("down");
-                        this.p.down = false;
+                    if(this.p.y > 240){
+                       if(this.p.x < 40 && this.p.x > 0){
+                            this.play("down_right_2");
+                        }else if(this.p.x < 45 && this.p.x > 40){
+                            this.play("right");
+                            console.log(this.p.x);
+                            this.p.count++;
+                        }else if(this.p.x < 95 && this.p.x > 45){
+                            this.play("up_right_2");
+                        }else if(this.p.x < 100 && this.p.x > 95){
+                            this.play("up");
+                        } 
+                    }else{
+                        if(this.p.x < 100 && this.p.x > 60){
+                            this.play("up_left_2");
+                        }else if(this.p.x < 55 && this.p.x > 60){
+                            this.play("left");
+                        }else if(this.p.x < 55 && this.p.x > 5){
+                            this.play("down_left_2");
+                        }else if(this.p.x < 5 && this.p.x > 0){
+                            this.play("down");
+                        }
                     }
-                }       
+                }  
             }else{
                 this.p.x += this.p.vx * dt;
             }  
