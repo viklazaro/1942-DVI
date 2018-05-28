@@ -218,7 +218,7 @@ window.addEventListener("load", function() {
         },
 
         shoot: function() {
-            this.stage.insert(new Q.Bullet_Player({ x: this.p.x, y: this.p.y - this.p.w / 2, vy: -100 }));
+            this.stage.insert(new Q.Bullet_Player({ x: this.p.x, y: this.p.y - this.p.h , vy: -100 }));
             Q.audio.play("shot_effect.mp3");
         },
 
