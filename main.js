@@ -22,6 +22,65 @@ window.addEventListener("load", function() {
         stage.insert(new Q.Enemy7(this, 220, 240, false)); //Hacia la izquierda
     });
 
+    var level1 = [
+        // Start,   End, Gap,  Type,   Override
+        [ 0,      4000,  500, 'Enemy3', {x: 0, y: 0}],
+        [ 6000,   13000, 1200, 'Enemy2', {x: 220, y: 50}],
+        [ 10000,  16000, 1200, 'Enemy1', {x: 100, y: 400} ],
+        [ 17800,  20000, 500, 'Enemy7', {x: 220, y: 240, dir: false} ],
+        [ 18200,  20000, 500, 'Enemy3', {x: 0, y: 0} ],
+        [ 18200,  20000, 500, 'Enemy3', {x: 0, y: 0} ],
+        [ 22000,  25000, 400, 'Enemy3', {x: 0, y: 0}],
+        [ 22000,  25000, 400, 'Enemy3', {x: 0, y: 0}]
+    ];
+
+    Q.scene("level",function(stage) {
+        this.levelData = [];
+        //var enemies = {enemy3: new Q.Enemy3(this, 0, 0)};
+        for(var i =0; i<level1.length; i++) {
+            this.levelData.push(Object.create(level1[i]));
+        }
+        this.t = 0;
+        //this.callback = callback;
+        stage.on("step", this, function (dt) {
+            var idx = 0, remove = [], currentWave = null;
+
+            // Update the current time offset
+            this.t += dt * 1000;
+
+            //   Start, End,  Gap, Type,   Override
+            // [ 0,     4000, 500, 'Enemy3', { x: 0, y: 0 } ]
+            while((currentWave = level1[idx]) &&
+            (currentWave[0] < this.t + 2000)) {
+                // Check if we've passed the end time
+                if(this.t > currentWave[1]) {
+                    remove.push(currentWave);
+                } else if(currentWave[0] < this.t) {
+                    // Add an enemy from the current wave
+                    stage.loadAssets([[currentWave[3], currentWave[4]]]);
+                    // Increment the start time by the gap
+                    currentWave[0] += currentWave[2];
+                }
+                idx++;
+            }
+
+            // Remove any objects from the levelData that have passed
+            for(var i=0,len=remove.length;i<len;i++) {
+                var remIdx = this.levelData.indexOf(remove[i]);
+                if(remIdx != -1) this.levelData.splice(remIdx,1);
+            }
+
+            // If there are no more enemies on the board or in
+            // levelData, this level is done
+            /*if(this.levelData.length === 0 && this.board.cnt[OBJECT_ENEMY] === 0) {
+                if(this.callback) this.callback();
+            }*/
+
+
+        });
+        stage.insert(new Q.Player(this));
+    });
+
     Q.scene("background", function(stage) {
         stage.insert(new Q.Background(this));
         Q.audio.play("music_main.mp3", { loop: true });
@@ -88,7 +147,7 @@ window.addEventListener("load", function() {
         });
 
         Q.stageScene("background", 0);
-        Q.stageScene("level1", 1);
+        Q.stageScene("level", 1);
 
     });
     Q.SPRITE_NONE = 0;
