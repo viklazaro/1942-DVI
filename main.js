@@ -29,14 +29,11 @@ window.addEventListener("load", function() {
         [ 10000,  16000, 1200, 'Enemy1', {x: 100, y: 400} ],
         [ 17800,  20000, 500, 'Enemy7', {x: 220, y: 240, dir: false} ],
         [ 18200,  20000, 500, 'Enemy3', {x: 0, y: 0} ],
-        [ 18200,  20000, 500, 'Enemy3', {x: 0, y: 0} ],
-        [ 22000,  25000, 400, 'Enemy3', {x: 0, y: 0}],
         [ 22000,  25000, 400, 'Enemy3', {x: 0, y: 0}]
     ];
 
     Q.scene("level",function(stage) {
         this.levelData = [];
-        //var enemies = {enemy3: new Q.Enemy3(this, 0, 0)};
         for(var i =0; i<level1.length; i++) {
             this.levelData.push(Object.create(level1[i]));
         }
