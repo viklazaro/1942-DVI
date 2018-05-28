@@ -4,7 +4,7 @@ window.addEventListener("load", function() {
     // Set up an instance of the Quintus engine  and include
     // the Sprites, Scenes, Input and 2D module. The 2D module
     // includes the `TileLayer` class as well as the `2d` component.
-    var Q = window.Q = Quintus({ audioSupported: ['wav', 'mp3', 'ogg'] })
+    var Q = window.Q = Quintus({ audioSupported: ['mp3', 'ogg'] })
         .include("Sprites, Scenes, Input, 2D, Anim, Touch, UI, TMX, Audio")
         // Maximize this game to whatever the size of the browser is
         .setup({ width: 220, height: 480 })
@@ -27,7 +27,8 @@ window.addEventListener("load", function() {
         Q.audio.play("music_main.mp3", { loop: true });
     });
 
-    Q.load("test.png, airplane.png, airplane.json, sprites.json, enemies.png, anim.png, anim.json, boss.png, boss.json, music_main.mp3, shot_effect.mp3", function() {
+    Q.load("test.png, airplane.png, airplane.json, sprites.json, enemies.png, anim.png, anim.json, boss.png, boss.json, " +
+        "music_main.mp3, shot_effect.mp3, explosion_effect.mp3", function() {
         Q.compileSheets("airplane.png", "airplane.json");
         Q.compileSheets("enemies.png", "sprites.json");
         Q.compileSheets("anim.png", "anim.json");
@@ -160,6 +161,7 @@ window.addEventListener("load", function() {
 
         shoot: function() {
             this.stage.insert(new Q.Bullet_Player({ x: this.p.x, y: this.p.y - this.p.w / 2, vy: -100 }));
+            Q.audio.play("shot_effect.mp3");
         },
 
         collision: function(col) {
@@ -167,6 +169,7 @@ window.addEventListener("load", function() {
                 col.obj.destroy();
                 this.p.vida--;
                 if (this.p.vida == 0) {
+                    Q.audio.play("explosion_effect.mp3");
                     this.stage.insert(new Q.Explosion_P({ x: this.p.x, y: this.p.y - this.p.w / 2 }));
                     this.destroy();
                 }
@@ -273,6 +276,7 @@ window.addEventListener("load", function() {
                 this.destroy();
                 col.obj.destroy();
             } else if (col.obj.isA("Player")) {
+                Q.audio.play("explosion_effect.mp3");
                 this.stage.insert(new Q.Explosion_P({ x: this.p.x, y: this.p.y - this.p.w / 2 })); //Hay que llamar a la animacion de la explosión
                 this.destroy();
                 col.obj.destroy();
@@ -323,6 +327,7 @@ window.addEventListener("load", function() {
                 this.destroy();
                 col.obj.destroy();
             } else if (col.obj.isA("Player")) {
+                Q.audio.play("explosion_effect.mp3");
                 this.stage.insert(new Q.Explosion_P({ x: this.p.x, y: this.p.y - this.p.w / 2 })); //Hay que llamar a la animacion de la explosión
                 this.destroy();
                 col.obj.destroy();
@@ -387,6 +392,7 @@ window.addEventListener("load", function() {
                 this.destroy();
                 col.obj.destroy();
             } else if (col.obj.isA("Player")) {
+                Q.audio.play("explosion_effect.mp3");
                 this.stage.insert(new Q.Explosion_P({ x: this.p.x, y: this.p.y - this.p.w / 2 })); //Hay que llamar a la animacion de la explosión
                 this.destroy();
                 col.obj.destroy();
@@ -499,6 +505,7 @@ window.addEventListener("load", function() {
                 col.obj.destroy();
             }
             else if(col.obj.isA("Player")){
+                Q.audio.play("explosion_effect.mp3");
                 this.stage.insert(new Q.Explosion_P({x: this.p.x, y: this.p.y- this.p.w/2}));//Hay que llamar a la animacion de la explosión
                 this.destroy();
                 col.obj.destroy();
