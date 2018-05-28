@@ -76,6 +76,7 @@ window.addEventListener("load", function() {
 
         });
         stage.insert(new Q.Player(this));
+        Q.state.set("score", 0);
     });
 
     Q.scene("background", function(stage) {
@@ -145,6 +146,7 @@ window.addEventListener("load", function() {
 
         Q.stageScene("background", 0);
         Q.stageScene("level", 1);
+        Q.stageScene("HUD", 2);
 
     });
     Q.SPRITE_NONE = 0;
@@ -293,14 +295,12 @@ window.addEventListener("load", function() {
                 type: Q.SPRITE_ENEMY
             });
 
-            this.add("animation");
-            this.on("hit", this, "collision");
+            this.add("animation, defaultEnemy");
+            this.onCollission();
 
         },
 
         step: function(dt) {
-            //this.stage.insert(new Q.Bullet_Enemy({x: this.p.x, y: this.p.y- this.p.w/2, vy: -100}));
-
             this.stage.collide(this);
 
             this.p.tiempo += dt;
@@ -324,19 +324,6 @@ window.addEventListener("load", function() {
             if (this.p.y > Q.height || this.p.y < 0 || this.p.x > Q.width || this.p.x < 0) {
                 this.destroy();
             }
-        },
-
-        collision: function(col) {
-            if (col.obj.isA("Bullet_Player")) {
-                this.stage.insert(new Q.Explosion({ x: this.p.x, y: this.p.y - this.p.w / 2 })); //ESTO ANTES ESTABA COMENTADO
-                this.destroy();
-                col.obj.destroy();
-            } else if (col.obj.isA("Player")) {
-                Q.audio.play("explosion_effect.mp3");
-                this.stage.insert(new Q.Explosion_P({ x: this.p.x, y: this.p.y - this.p.w / 2 })); //Hay que llamar a la animacion de la explosión
-                this.destroy();
-                col.obj.destroy();
-            }
         }
 
     });
@@ -355,8 +342,8 @@ window.addEventListener("load", function() {
                 type: Q.SPRITE_ENEMY
             });
 
-            this.add("animation");
-            this.on("hit", this, "collision");
+            this.add("animation, defaultEnemy");
+            this.onCollission();
         },
 
         step: function(dt) {
@@ -374,19 +361,6 @@ window.addEventListener("load", function() {
 
             if (this.p.y > Q.height || this.p.y < 0 || this.p.x > Q.width || this.p.x < 0) {
                 this.destroy();
-            }
-        },
-
-        collision: function(col) {
-            if (col.obj.isA("Bullet_Player")) {
-                this.stage.insert(new Q.Explosion({ x: this.p.x, y: this.p.y - this.p.w / 2 })); //ESTO ANTES ESTABA COMENTADO
-                this.destroy();
-                col.obj.destroy();
-            } else if (col.obj.isA("Player")) {
-                Q.audio.play("explosion_effect.mp3");
-                this.stage.insert(new Q.Explosion_P({ x: this.p.x, y: this.p.y - this.p.w / 2 })); //Hay que llamar a la animacion de la explosión
-                this.destroy();
-                col.obj.destroy();
             }
         }
     });
@@ -406,8 +380,8 @@ window.addEventListener("load", function() {
                 back: false
             });
 
-            this.add("animation");
-            this.on("hit", this, "collision");
+            this.add("animation, defaultEnemy");
+            this.onCollission();
         },
 
         step: function(dt) {
@@ -440,19 +414,6 @@ window.addEventListener("load", function() {
                 this.destroy();
             }
 
-        },
-
-        collision: function(col) {
-            if (col.obj.isA("Bullet_Player")) {
-                this.stage.insert(new Q.Explosion({ x: this.p.x, y: this.p.y - this.p.w / 2 })); //ESTO ANTES ESTABA COMENTADO
-                this.destroy();
-                col.obj.destroy();
-            } else if (col.obj.isA("Player")) {
-                Q.audio.play("explosion_effect.mp3");
-                this.stage.insert(new Q.Explosion_P({ x: this.p.x, y: this.p.y - this.p.w / 2 })); //Hay que llamar a la animacion de la explosión
-                this.destroy();
-                col.obj.destroy();
-            }
         }
 
     });
@@ -472,8 +433,8 @@ window.addEventListener("load", function() {
                 dir: dirR
             });
 
-            this.add("animation");
-            this.on("hit", this, "collision");
+            this.add("animation, defaultEnemy");
+            this.onCollission();
         },
 
         step: function (dt) {  
@@ -552,20 +513,6 @@ window.addEventListener("load", function() {
                 this.destroy();
             }
 
-        },
-
-        collision: function(col){
-            if(col.obj.isA("Bullet_Player")){
-                this.stage.insert(new Q.Explosion({x: this.p.x, y: this.p.y- this.p.w/2})); //ESTO ANTES ESTABA COMENTADO
-                this.destroy();
-                col.obj.destroy();
-            }
-            else if(col.obj.isA("Player")){
-                Q.audio.play("explosion_effect.mp3");
-                this.stage.insert(new Q.Explosion_P({x: this.p.x, y: this.p.y- this.p.w/2}));//Hay que llamar a la animacion de la explosión
-                this.destroy();
-                col.obj.destroy();
-            }
         }
 
     });
@@ -635,6 +582,27 @@ window.addEventListener("load", function() {
         }
     });
 
+    Q.component("defaultEnemy", {
+        extend: {
+            onCollission: function() {
+                this.on("hit", function(col){
+                    if(col.obj.isA("Bullet_Player")){
+                        this.stage.insert(new Q.Explosion({x: this.p.x, y: this.p.y- this.p.w/2})); //ESTO ANTES ESTABA COMENTADO
+                        Q.state.inc("score", 10);
+                        this.destroy();
+                        col.obj.destroy();
+                    }
+                    else if(col.obj.isA("Player")){
+                        Q.audio.play("explosion_effect.mp3");
+                        this.stage.insert(new Q.Explosion_P({x: this.p.x, y: this.p.y- this.p.w/2}));//Hay que llamar a la animacion de la explosión
+                        this.destroy();
+                        col.obj.destroy();
+                    }
+                });
+            }
+        }
+    })
+
     Q.Sprite.extend("Explosion", {
         init: function(p) {
             this._super(p, {
@@ -685,5 +653,30 @@ window.addEventListener("load", function() {
             })
         }
     });
+
+    Q.UI.Text.extend("Score", {
+        init: function(p) {
+            this._super({
+                label: "Score: 0",
+                x: 10,
+                y: 0
+            });
+
+            Q.state.on("change.score", this, "score");
+        },
+
+        score: function(score) {
+            this.p.label = "Score: " + score;
+        }
+    });
+
+    Q.scene("HUD", function(stage) {
+        var container = stage.insert(new Q.UI.Container({
+            x: 50,
+            y: 0
+        }));
+        stage.insert(new Q.Score(), container);
+        container.fit(20);
+    }, { stage: 2 });
 
 });
