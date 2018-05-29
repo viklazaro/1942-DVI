@@ -25,38 +25,43 @@ window.addEventListener("load", function() {
     var level1 = [
         // Start,   End, Gap,  Type,   Override
         //[0, 500, 500, 'Boss', {x: 0, y:200}]
-        [ 0,      4000,  500, 'Enemy3', {x: 0, y: 0}],
-        [ 6000,   13000, 1200, 'Enemy2', {x: 220, y: 50}],
-        [ 10000,  16000, 1200, 'Enemy1', {x: 100, y: 400} ],
-        [ 17800,  20000, 500, 'Enemy7', {x: 220, y: 240, dir: false} ],
-        [ 18200,  20000, 500, 'Enemy3', {x: 0, y: 0} ],
-        [ 22000,  25000, 400, 'Enemy3', {x: 0, y: 0}],
-        [ 26000, 26500, 500, 'Boss', {x: 0, y:200}]
+        [0, 4000, 500, 'Enemy3', { x: 0, y: 0 }],
+        [6000, 13000, 1200, 'Enemy2', { x: 220, y: 50 }],
+        [10000, 13000, 1200, 'Enemy1', { x: 70, y: 470 }],
+        [14000, 17000, 1200, 'Enemy1', { x: 140, y: 470 }],
+        [17800, 20000, 500, 'Enemy7', { x: 220, y: 240, dir: false }],
+        [18200, 20000, 500, 'Enemy3', { x: 0, y: 0 }],
+        [22000, 25000, 400, 'Enemy3', { x: 0, y: 0 }],
+        [26000, 26500, 500, 'Boss', { x: 0, y: 200 }]
     ];
 
-    Q.scene("level",function(stage) {
+    Q.scene("level", function(stage) {
         this.levelData = [];
-        for(var i =0; i<level1.length; i++) {
+        for (var i = 0; i < level1.length; i++) {
             this.levelData.push(Object.create(level1[i]));
         }
         this.t = 0;
         //this.callback = callback;
-        stage.on("step", this, function (dt) {
-            var idx = 0, remove = [], currentWave = null;
+        stage.on("step", this, function(dt) {
+            var idx = 0,
+                remove = [],
+                currentWave = null;
 
             // Update the current time offset
             this.t += dt * 1000;
 
             //   Start, End,  Gap, Type,   Override
             // [ 0,     4000, 500, 'Enemy3', { x: 0, y: 0 } ]
-            while((currentWave = level1[idx]) &&
-            (currentWave[0] < this.t + 2000)) {
+            while ((currentWave = level1[idx]) &&
+                (currentWave[0] < this.t + 2000)) {
                 // Check if we've passed the end time
-                if(this.t > currentWave[1]) {
+                if (this.t > currentWave[1]) {
                     remove.push(currentWave);
-                } else if(currentWave[0] < this.t) {
+                } else if (currentWave[0] < this.t) {
                     // Add an enemy from the current wave
-                    stage.loadAssets([[currentWave[3], currentWave[4]]]);
+                    stage.loadAssets([
+                        [currentWave[3], currentWave[4]]
+                    ]);
                     // Increment the start time by the gap
                     currentWave[0] += currentWave[2];
                 }
@@ -64,9 +69,9 @@ window.addEventListener("load", function() {
             }
 
             // Remove any objects from the levelData that have passed
-            for(var i=0,len=remove.length;i<len;i++) {
+            for (var i = 0, len = remove.length; i < len; i++) {
                 var remIdx = this.levelData.indexOf(remove[i]);
-                if(remIdx != -1) this.levelData.splice(remIdx,1);
+                if (remIdx != -1) this.levelData.splice(remIdx, 1);
             }
 
             // If there are no more enemies on the board or in
@@ -87,70 +92,71 @@ window.addEventListener("load", function() {
     });
 
     Q.load("test.png, airplane.png, airplane.json, sprites.json, enemies.png, anim.png, anim.json, boss.png, boss.json, " +
-        "music_main.mp3, shot_effect.mp3, explosion_effect.mp3", function() {
-        Q.compileSheets("airplane.png", "airplane.json");
-        Q.compileSheets("enemies.png", "sprites.json");
-        Q.compileSheets("anim.png", "anim.json");
-        Q.compileSheets("boss.png", "boss.json");
+        "music_main.mp3, shot_effect.mp3, explosion_effect.mp3",
+        function() {
+            Q.compileSheets("airplane.png", "airplane.json");
+            Q.compileSheets("enemies.png", "sprites.json");
+            Q.compileSheets("anim.png", "anim.json");
+            Q.compileSheets("boss.png", "boss.json");
 
-        Q.animations("player_anim", {
-            "stand": { frames: [1], rate: 1 / 10, loop: false },
-            "loop": { frames: [11, 12, 13, 14, 15, 16, 17, 18, 1], rate: 1 / 10, loop: false }
+            Q.animations("player_anim", {
+                "stand": { frames: [1], rate: 1 / 10, loop: false },
+                "loop": { frames: [11, 12, 13, 14, 15, 16, 17, 18, 1], rate: 1 / 10, loop: false }
+            });
+
+            Q.animations("enemy1_anim", {
+                //"stand": {frames: [0], rate: 1/10, loop: false},
+                "up": { frames: [0], rate: 1 / 10, loop: false },
+                "loop": { frames: [1, 2, 3, 4, 5, 6, 7], rate: 1 / 10, loop: false }
+            });
+
+            Q.animations("enemy2_anim", {
+                "left": { frames: [0], rate: 1 / 10, loop: false }
+            });
+
+            Q.animations("enemy3_anim", {
+                "down": { frames: [0], rate: 1 / 10, loop: false },
+                "loop": { frames: [8, 9], rate: 1 / 2, loop: false },
+                "up": { frames: [10], rate: 1 / 3, loop: false }
+            });
+
+            Q.animations("enemy7_anim", {
+                "down_left_1": { frames: [15, 14, 13], rate: 1, loop: false },
+                "left": { frames: [12], rate: 1, loop: false },
+                "up_left_1": { frames: [11, 10, 9], rate: 1, loop: false },
+                "up": { frames: [8], rate: 1, loop: false },
+                "up_right_1": { frames: [7, 6, 5], rate: 1, loop: false },
+                "right": { frames: [4], rate: 1, loop: false },
+                "down_right_1": { frames: [3, 2, 1], rate: 1, loop: false },
+                "down": { frames: [0], rate: 1, loop: false },
+                "down_right_2": { frames: [1, 2, 3], rate: 1, loop: false },
+                "up_right_2": { frames: [5, 6, 7], rate: 1, loop: false },
+                "up_left_2": { frames: [9, 10, 11], rate: 1, loop: false },
+                "down_left_2": { frames: [13, 14, 15], rate: 1, loop: false }
+            });
+
+            Q.animations("boss_anim", {
+                "down": { frames: [0], rate: 1 / 10, loop: false },
+                "stand": { frames: [0], rate: 1 / 10, loop: false }
+            });
+
+            Q.animations("boss_explosion_anim", {
+                "explosion_boss": { frames: [0, 1, 2, 3], rate: 1 / 4, loop: false, trigger: "exploted" }
+            });
+
+            Q.animations("explosion_anim", {
+                "explosion": { frames: [0, 1, 2, 3, 4, 5], rate: 1 / 3, loop: false, trigger: "exploted" }
+            });
+
+            Q.animations("explosion_anim_player", {
+                "explosion_jugador": { frames: [0, 1, 2, 3, 4, 5], rate: 1 / 3, loop: false, trigger: "exploted" }
+            });
+
+            Q.stageScene("background", 0);
+            Q.stageScene("level", 1);
+            Q.stageScene("HUD", 2);
+
         });
-
-        Q.animations("enemy1_anim", {
-            //"stand": {frames: [0], rate: 1/10, loop: false},
-            "up": { frames: [0], rate: 1 / 10, loop: false },
-            "loop": { frames: [1, 2, 3, 4, 5, 6, 7], rate: 1 / 10, loop: false }
-        });
-
-        Q.animations("enemy2_anim", {
-            "left": { frames: [0], rate: 1 / 10, loop: false }
-        });
-
-        Q.animations("enemy3_anim", {
-            "down": { frames: [0], rate: 1 / 10, loop: false },
-            "loop": { frames: [8, 9], rate: 1 / 2, loop: false },
-            "up": { frames: [10], rate: 1 / 3, loop: false }
-        });
-
-        Q.animations("enemy7_anim", {
-            "down_left_1": {frames: [15, 14, 13], rate: 1, loop: false},
-            "left": {frames: [12], rate: 1, loop: false},
-            "up_left_1": {frames: [11, 10, 9], rate: 1, loop: false},
-            "up": {frames: [8], rate: 1, loop: false},
-            "up_right_1": {frames: [7, 6, 5], rate: 1, loop: false},
-            "right": {frames: [4], rate: 1, loop: false},
-            "down_right_1": {frames: [3, 2, 1], rate: 1, loop: false},
-            "down": {frames: [0], rate: 1, loop: false},
-            "down_right_2": {frames: [1, 2, 3], rate: 1, loop: false},
-            "up_right_2": {frames: [5, 6, 7], rate: 1, loop: false},
-            "up_left_2": {frames: [9, 10, 11], rate: 1, loop: false},
-            "down_left_2": {frames: [13, 14, 15], rate: 1, loop: false}
-        });
-
-        Q.animations("boss_anim", {
-            "down": { frames: [0], rate: 1 / 10, loop: false },
-            "stand": { frames: [0], rate: 1 / 10, loop: false }
-        });
-
-        Q.animations("boss_explosion_anim", {
-            "explosion_boss": { frames: [0, 1, 2, 3], rate: 1 / 4, loop: false, trigger: "exploted" }
-        });
-
-        Q.animations("explosion_anim", {
-            "explosion": { frames: [0, 1, 2, 3, 4, 5], rate: 1 / 3, loop: false, trigger: "exploted" }
-        });
-
-        Q.animations("explosion_anim_player", {
-            "explosion_jugador": { frames: [0, 1, 2, 3, 4, 5], rate: 1 / 3, loop: false, trigger: "exploted" }
-        });
-
-        Q.stageScene("background", 0);
-        Q.stageScene("level", 1);
-        Q.stageScene("HUD", 2);
-
-    });
     Q.SPRITE_NONE = 0;
     Q.SPRITE_PLAYER = 1;
     Q.SPRITE_ENEMY = 2;
@@ -175,13 +181,15 @@ window.addEventListener("load", function() {
             this._super(p, {
                 sprite: "player_anim",
                 sheet: "player",
-                x: 100,
-                y: 450,
+                x: 110,
+                y: 400,
                 gravity: 0,
-                speed: 70,
+                speed: 80,
                 vida: 3,
                 collisionMask: Q.SPRITE_DEFAULT,
-                type: Q.SPRITE_PLAYER
+                type: Q.SPRITE_PLAYER,
+                fireTime: 0,
+                canFire: true
             });
 
             this.add("2d, animation");
@@ -194,6 +202,14 @@ window.addEventListener("load", function() {
             this.play("stand");
 
             var p = this.p;
+
+            if (!this.p.canFire) {
+                this.p.fireTime += dt;
+                if (this.p.fireTime >= 0.1) {
+                    this.p.canFire = true;
+                    this.p.fireTime = 0;
+                }
+            }
 
             if (this.p.x < 0)
                 this.p.x = 0;
@@ -220,8 +236,11 @@ window.addEventListener("load", function() {
         },
 
         shoot: function() {
-            this.stage.insert(new Q.Bullet_Player({ x: this.p.x, y: this.p.y - this.p.h , vy: -100 }));
-            Q.audio.play("shot_effect.mp3");
+            if (this.p.canFire) {
+                this.p.canFire = false;
+                this.stage.insert(new Q.Bullet_Player({ x: this.p.x, y: this.p.y - this.p.h, vy: -100 }));
+                Q.audio.play("shot_effect.mp3");
+            }
         },
 
         collision: function(col) {
@@ -421,7 +440,7 @@ window.addEventListener("load", function() {
     });
 
     Q.Sprite.extend("Enemy7", {
-        init: function (p, posX, posY, dirR) {
+        init: function(p, posX, posY, dirR) {
             this._super(p, {
                 sprite: "enemy7_anim",
                 sheet: "enemy7",
@@ -439,79 +458,79 @@ window.addEventListener("load", function() {
             this.onCollission();
         },
 
-        step: function (dt) {  
+        step: function(dt) {
             this.stage.collide(this);
 
             this.p.t += dt;
 
-            if(this.p.count < 7){
-                if(!this.p.dir){
+            if (this.p.count < 7) {
+                if (!this.p.dir) {
                     this.p.vx = (-50) * Math.sin(1 * this.p.t + 0);
-                    this.p.vy = 50 * Math.sin(1 * this.p.t + Math.PI/2);
-                }else{
+                    this.p.vy = 50 * Math.sin(1 * this.p.t + Math.PI / 2);
+                } else {
                     this.p.vx = 50 * Math.sin(1 * this.p.t + 0);
-                    this.p.vy = (-50) * Math.sin(1 * this.p.t - Math.PI/2);
+                    this.p.vy = (-50) * Math.sin(1 * this.p.t - Math.PI / 2);
                 }
-                
+
 
                 this.p.x += this.p.vx * dt;
                 this.p.y += this.p.vy * dt;
 
-                if(!this.p.dir){
-                    if(this.p.y > 240){
-                        if(this.p.x < 220 && this.p.x > 180){
+                if (!this.p.dir) {
+                    if (this.p.y > 240) {
+                        if (this.p.x < 220 && this.p.x > 180) {
                             this.play("down_left_1");
-                        }else if(this.p.x < 180 && this.p.x > 175){
+                        } else if (this.p.x < 180 && this.p.x > 175) {
                             this.play("left");
                             this.p.count++;
-                        }else if(this.p.x < 175 && this.p.x > 125){
+                        } else if (this.p.x < 175 && this.p.x > 125) {
                             this.play("up_left_1");
-                        }else if(this.p.x < 125 && this.p.x > 120){
+                        } else if (this.p.x < 125 && this.p.x > 120) {
                             this.play("up");
                         }
-                    }else{
-                        if(this.p.x < 220 && this.p.x > 180){
+                    } else {
+                        if (this.p.x < 220 && this.p.x > 180) {
                             this.play("down_right_1");
-                        }else if(this.p.x < 180 && this.p.x > 175){
+                        } else if (this.p.x < 180 && this.p.x > 175) {
                             this.play("right");
-                        }else if(this.p.x < 175 && this.p.x > 125){
+                        } else if (this.p.x < 175 && this.p.x > 125) {
                             this.play("up_right_1");
                             this.p.down = true;
-                        }else if(this.p.x < 125 && this.p.x > 120 && this.p.down){
+                        } else if (this.p.x < 125 && this.p.x > 120 && this.p.down) {
                             this.play("down");
                             this.p.down = false;
                         }
-                    }  
-                }else{
-                    if(this.p.y > 240){
-                       if(this.p.x < 40 && this.p.x > 0){
+                    }
+                } else {
+                    if (this.p.y > 240) {
+                        if (this.p.x < 40 && this.p.x > 0) {
                             this.play("down_right_2");
-                        }else if(this.p.x < 45 && this.p.x > 40){
+                        } else if (this.p.x < 45 && this.p.x > 40) {
                             this.play("right");
                             console.log(this.p.x);
                             this.p.count++;
-                        }else if(this.p.x < 95 && this.p.x > 45){
+                        } else if (this.p.x < 95 && this.p.x > 45) {
                             this.play("up_right_2");
-                        }else if(this.p.x < 100 && this.p.x > 95){
+                        } else if (this.p.x < 100 && this.p.x > 95) {
                             this.play("up");
-                        } 
-                    }else{
-                        if(this.p.x < 100 && this.p.x > 60){
+                        }
+                    } else {
+                        if (this.p.x < 100 && this.p.x > 60) {
                             this.play("up_left_2");
-                        }else if(this.p.x < 55 && this.p.x > 60){
+                        } else if (this.p.x < 55 && this.p.x > 60) {
                             this.play("left");
-                        }else if(this.p.x < 55 && this.p.x > 5){
+                        } else if (this.p.x < 55 && this.p.x > 5) {
                             this.play("down_left_2");
-                        }else if(this.p.x < 5 && this.p.x > 0){
+                        } else if (this.p.x < 5 && this.p.x > 0) {
                             this.play("down");
                         }
                     }
-                }  
-            }else{
+                }
+            } else {
                 this.p.x += this.p.vx * dt;
-            }  
+            }
 
-            if(this.p.y > Q.height || this.p.y < 0 || this.p.x > Q.width || this.p.x < 0){
+            if (this.p.y > Q.height || this.p.y < 0 || this.p.x > Q.width || this.p.x < 0) {
                 this.destroy();
             }
 
@@ -536,7 +555,7 @@ window.addEventListener("load", function() {
                 collisionMask: Q.SPRITE_DEFAULT,
                 type: Q.SPRITE_ENEMY,
                 stand: false,
-                health: 30
+                health: 60
             });
             this.add("animation");
             this.on("hit", this, "collision");
@@ -549,26 +568,28 @@ window.addEventListener("load", function() {
             this.p.tiempo += dt;
             this.p.tiempoDisparo += dt;
 
-            if(this.p.tiempo < 5 && this.p.inmune){
+            if (this.p.tiempo < 5 && this.p.inmune) {
                 this.p.x += this.p.vx * dt;
-            }
-            else{
+            } else {
                 this.p.inmune = false;
-                if(this.p.tiempoDisparo > 0.7) {
+                if (this.p.tiempoDisparo > 0.5) {
 
-                    this.stage.insert(new Q.Bullet_Enemy({x: this.p.x, y: 200, vy: -100, direccion: "abajo"}));
-                    if(this.p.tiempo < 2){
-                        this.stage.insert(new Q.Bullet_Enemy({x: this.p.x - 40, y: 200, vy: -100, direccion: "abajo"}));
+                    this.stage.insert(new Q.Bullet_Enemy({ x: this.p.x, y: 200, vy: -100, direccion: "abajo" }));
+                    let r1 = Math.floor((Math.random() * 120) + 1) - 59;
+                    let r2 = Math.floor((Math.random() * 120) + 1) - 59;
+                    // if (this.p.tiempo < 2) {
+                    //     this.stage.insert(new Q.Bullet_Enemy({ x: this.p.x - 40, y: 200, vy: -100, direccion: "abajo" }));
+                    //     this.p.contador++;
+                    // } else {
+                    //     this.stage.insert(new Q.Bullet_Enemy({ x: this.p.x + 40, y: 200, vy: -100, direccion: "abajo" }));
+                    // }
+                    this.stage.insert(new Q.Bullet_Enemy({ x: this.p.x + r1, y: 200, vy: -100, direccion: "abajo" }));
+                    this.stage.insert(new Q.Bullet_Enemy({ x: this.p.x + r2, y: 200, vy: -100, direccion: "abajo" }));
+
+                    if (this.p.tiempo > 4)
                         this.p.contador++;
-                    }
-                    else{
-                        this.stage.insert(new Q.Bullet_Enemy({x: this.p.x + 40, y: 200, vy: -100, direccion: "abajo"}));
-                    }
 
-                    if(this.p.tiempo > 4)
-                        this.p.contador++;
-
-                    if(this.p.contador >= 4){
+                    if (this.p.contador >= 4) {
                         this.p.tiempo = 0;
                         this.p.contador = 0;
                     }
@@ -581,22 +602,22 @@ window.addEventListener("load", function() {
 
         collision: function(col) {
             if (col.obj.isA("Bullet_Player")) {
-                if(!this.p.inmune)
+                if (!this.p.inmune)
                     this.p.health -= 5;
                 if (this.p.health <= 0) {
-                    /*this.stage.insert(new Q.Explosion_B({
-                        x: this.p.x,
-                        y: this.p.y - this.p.w / 2
-                    }));*/
+                    // this.stage.insert(new Q.Explosion_B({
+                    //     x: this.p.x,
+                    //     y: this.p.y - this.p.w / 2
+                    // }));
                     this.stage.insert(new Q.Explosion_P({ x: this.p.x, y: 200 }));
                     this.stage.insert(new Q.Explosion_P({ x: this.p.x + 40, y: 200 }));
-                    this.stage.insert(new Q.Explosion_P({ x: this.p.x + 80, y: 200 }));
+                    this.stage.insert(new Q.Explosion_P({ x: this.p.x - 40, y: 200 }));
                     this.stage.insert(new Q.Explosion_P({ x: this.p.x, y: (this.p.y - this.p.w / 2) + 40 }));
                     this.stage.insert(new Q.Explosion_P({ x: this.p.x + 40, y: (this.p.y - this.p.w / 2) + 40 }));
-                    this.stage.insert(new Q.Explosion_P({ x: this.p.x + 80, y: (this.p.y - this.p.w / 2) + 40 }));
+                    this.stage.insert(new Q.Explosion_P({ x: this.p.x - 40, y: (this.p.y - this.p.w / 2) + 40 }));
                     this.stage.insert(new Q.Explosion_P({ x: this.p.x, y: (this.p.y - this.p.w / 2) + 80 }));
                     this.stage.insert(new Q.Explosion_P({ x: this.p.x + 40, y: (this.p.y - this.p.w / 2) + 80 }));
-                    this.stage.insert(new Q.Explosion_P({ x: this.p.x + 80, y: (this.p.y - this.p.w / 2) + 80 }));
+                    this.stage.insert(new Q.Explosion_P({ x: this.p.x - 40, y: (this.p.y - this.p.w / 2) + 80 }));
 
                     this.destroy();
                 }
@@ -614,16 +635,15 @@ window.addEventListener("load", function() {
     Q.component("defaultEnemy", {
         extend: {
             onCollission: function() {
-                this.on("hit", function(col){
-                    if(col.obj.isA("Bullet_Player")){
-                        this.stage.insert(new Q.Explosion({x: this.p.x, y: this.p.y- this.p.w/2})); //ESTO ANTES ESTABA COMENTADO
+                this.on("hit", function(col) {
+                    if (col.obj.isA("Bullet_Player")) {
+                        this.stage.insert(new Q.Explosion({ x: this.p.x, y: this.p.y - this.p.w / 2 })); //ESTO ANTES ESTABA COMENTADO
                         Q.state.inc("score", 10);
                         this.destroy();
                         col.obj.destroy();
-                    }
-                    else if(col.obj.isA("Player")){
+                    } else if (col.obj.isA("Player")) {
                         Q.audio.play("explosion_effect.mp3");
-                        this.stage.insert(new Q.Explosion_P({x: this.p.x, y: this.p.y- this.p.w/2}));//Hay que llamar a la animacion de la explosión
+                        this.stage.insert(new Q.Explosion_P({ x: this.p.x, y: this.p.y - this.p.w / 2 })); //Hay que llamar a la animacion de la explosión
                         this.destroy();
                         col.obj.destroy();
                     }
