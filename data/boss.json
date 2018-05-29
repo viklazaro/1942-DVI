@@ -1,4 +1,4 @@
 {
-	"boss": {"sx": 0, "sy":0, "cols":1, "tilew": 191, "tileH":86, "frames": 1},
+	"boss": {"sx": 0, "sy":0, "cols":1, "tilew": 185, "tileH":86, "frames": 1},
 	"explosion_boss": {"sx": 187, "sy":32, "cols":1, "tilew": 30, "tileH":27, "frames": 4}
 }

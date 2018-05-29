@@ -24,12 +24,14 @@ window.addEventListener("load", function() {
 
     var level1 = [
         // Start,   End, Gap,  Type,   Override
+        //[0, 500, 500, 'Boss', {x: 0, y:200}]
         [ 0,      4000,  500, 'Enemy3', {x: 0, y: 0}],
         [ 6000,   13000, 1200, 'Enemy2', {x: 220, y: 50}],
         [ 10000,  16000, 1200, 'Enemy1', {x: 100, y: 400} ],
         [ 17800,  20000, 500, 'Enemy7', {x: 220, y: 240, dir: false} ],
         [ 18200,  20000, 500, 'Enemy3', {x: 0, y: 0} ],
-        [ 22000,  25000, 400, 'Enemy3', {x: 0, y: 0}]
+        [ 22000,  25000, 400, 'Enemy3', {x: 0, y: 0}],
+        [ 26000, 26500, 500, 'Boss', {x: 0, y:200}]
     ];
 
     Q.scene("level",function(stage) {
@@ -528,6 +530,9 @@ window.addEventListener("load", function() {
                 vy: 5,
                 gravity: 0,
                 tiempo: 0,
+                tiempoDisparo: 0,
+                contador: 0,
+                inmune: true,
                 collisionMask: Q.SPRITE_DEFAULT,
                 type: Q.SPRITE_ENEMY,
                 stand: false,
@@ -535,43 +540,67 @@ window.addEventListener("load", function() {
             });
             this.add("animation");
             this.on("hit", this, "collision");
+
         },
 
         step: function(dt) {
             this.stage.collide(this);
 
             this.p.tiempo += dt;
+            this.p.tiempoDisparo += dt;
 
-            if (this.p.tiempo > 0.2) {
-                this.stage.insert(new Q.Bullet_Enemy({
-                    x: this.p.x,
-                    y: this.p.y - this.p.w / 2,
-                    vy: -100,
-                    direccion: "random" // TODO
-                }));
-                this.p.tiempo = 0;
-            }
-
-            if (this.p.y < 100 && !this.p.stand) {
-                this.play("down");
+            if(this.p.tiempo < 5 && this.p.inmune){
                 this.p.x += this.p.vx * dt;
-                this.p.y += (this.p.vy * dt) * (this.p.vy * dt) + (this.p.vy * dt) + 1;
-            } else {
-                this.play("stand");
-                this.p.stand = true;
+            }
+            else{
+                this.p.inmune = false;
+                if(this.p.tiempoDisparo > 0.7) {
+
+                    this.stage.insert(new Q.Bullet_Enemy({x: this.p.x, y: 200, vy: -100, direccion: "abajo"}));
+                    if(this.p.tiempo < 2){
+                        this.stage.insert(new Q.Bullet_Enemy({x: this.p.x - 40, y: 200, vy: -100, direccion: "abajo"}));
+                        this.p.contador++;
+                    }
+                    else{
+                        this.stage.insert(new Q.Bullet_Enemy({x: this.p.x + 40, y: 200, vy: -100, direccion: "abajo"}));
+                    }
+
+                    if(this.p.tiempo > 4)
+                        this.p.contador++;
+
+                    if(this.p.contador >= 4){
+                        this.p.tiempo = 0;
+                        this.p.contador = 0;
+                    }
+                    this.p.tiempoDisparo = 0;
+
+                }
+
             }
         },
 
         collision: function(col) {
             if (col.obj.isA("Bullet_Player")) {
-                this.p.health--;
+                if(!this.p.inmune)
+                    this.p.health -= 5;
                 if (this.p.health <= 0) {
-                    this.stage.insert(new Q.Explosion_B({
+                    /*this.stage.insert(new Q.Explosion_B({
                         x: this.p.x,
                         y: this.p.y - this.p.w / 2
-                    }));
+                    }));*/
+                    this.stage.insert(new Q.Explosion_P({ x: this.p.x, y: 200 }));
+                    this.stage.insert(new Q.Explosion_P({ x: this.p.x + 40, y: 200 }));
+                    this.stage.insert(new Q.Explosion_P({ x: this.p.x + 80, y: 200 }));
+                    this.stage.insert(new Q.Explosion_P({ x: this.p.x, y: (this.p.y - this.p.w / 2) + 40 }));
+                    this.stage.insert(new Q.Explosion_P({ x: this.p.x + 40, y: (this.p.y - this.p.w / 2) + 40 }));
+                    this.stage.insert(new Q.Explosion_P({ x: this.p.x + 80, y: (this.p.y - this.p.w / 2) + 40 }));
+                    this.stage.insert(new Q.Explosion_P({ x: this.p.x, y: (this.p.y - this.p.w / 2) + 80 }));
+                    this.stage.insert(new Q.Explosion_P({ x: this.p.x + 40, y: (this.p.y - this.p.w / 2) + 80 }));
+                    this.stage.insert(new Q.Explosion_P({ x: this.p.x + 80, y: (this.p.y - this.p.w / 2) + 80 }));
+
                     this.destroy();
                 }
+                col.obj.destroy();
             } else if (col.obj.isA("Player")) {
                 this.stage.insert(new Q.Explosion_P({
                     x: this.p.x,
