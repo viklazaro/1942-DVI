@@ -32,7 +32,7 @@ window.addEventListener("load", function() {
         [17800, 20000, 500, 'Enemy7', { x: 220, y: 240, dir: false }],
         [18200, 20000, 500, 'Enemy3', { x: 0, y: 0 }],
         [22000, 25000, 400, 'Enemy3', { x: 0, y: 0 }],
-        [26000, 26500, 500, 'Boss', { x: 0, y: 200 }]
+        [29000, 29500, 500, 'Boss', { x: 0, y: 200 }]
     ];
 
     Q.scene("level", function(stage) {
@@ -707,7 +707,8 @@ window.addEventListener("load", function() {
         init: function(p) {
             this._super({
                 label: "Score: 0",
-                x: 10,
+                align: "left",
+                x: 0,
                 y: 0
             });
 
@@ -721,7 +722,7 @@ window.addEventListener("load", function() {
 
     Q.scene("HUD", function(stage) {
         var container = stage.insert(new Q.UI.Container({
-            x: 50,
+            x: 10,
             y: 0
         }));
         stage.insert(new Q.Score(), container);
