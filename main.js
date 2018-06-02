@@ -100,8 +100,8 @@ window.addEventListener("load", function() {
             Q.compileSheets("boss.png", "boss.json");
 
             Q.animations("player_anim", {
-                "stand": { frames: [1], rate: 1 / 10, loop: false },
-                "loop": { frames: [11, 12, 13, 14, 15, 16, 17, 18, 1], rate: 1 / 10, loop: false }
+                "stand": { frames: [0], rate: 1 / 10, loop: false },
+                "loop": { frames: [9, 10, 11, 15, 16], rate: 1/2, loop: false }
             });
 
             Q.animations("enemy1_anim", {
@@ -189,17 +189,29 @@ window.addEventListener("load", function() {
                 collisionMask: Q.SPRITE_DEFAULT,
                 type: Q.SPRITE_PLAYER,
                 fireTime: 0,
-                canFire: true
+                canFire: true,
+                isLooping: false,
+                loopTime: 0
             });
 
             this.add("2d, animation");
             Q.input.on("fire", this, "shoot");
             this.on("hit", this, "collision");
+            Q.input.on("action", this, "dodge");
         },
 
         step: function(dt) {
             this.stage.collide(this);
-            this.play("stand");
+
+            if(!this.p.isLooping)
+                this.play("stand");
+            else{
+                this.p.loopTime += dt;
+                if(this.p.loopTime > 1.2){
+                    this.p.isLooping = false;
+                    this.p.loopTime = 0;
+                }
+            }
 
             var p = this.p;
 
@@ -243,8 +255,15 @@ window.addEventListener("load", function() {
             }
         },
 
+        dodge: function(){
+            if(!this.p.isLooping){
+                this.p.isLooping = true;
+                this.play("loop");
+            }
+        },
+
         collision: function(col) {
-            if (col.obj.isA("Bullet_Enemy")) {
+            if (!this.p.isLooping && col.obj.isA("Bullet_Enemy")) {
                 col.obj.destroy();
                 this.p.vida--;
                 if (this.p.vida == 0) {
