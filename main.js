@@ -84,6 +84,7 @@ window.addEventListener("load", function() {
         });
         stage.insert(new Q.Player(this));
         Q.state.set("score", 0);
+        Q.state.set("lives", 0)
     });
 
     Q.scene("background", function(stage) {
@@ -191,7 +192,8 @@ window.addEventListener("load", function() {
                 fireTime: 0,
                 canFire: true,
                 isLooping: false,
-                loopTime: 0
+                loopTime: 0,
+                lives: 2
             });
 
             this.add("2d, animation");
@@ -267,9 +269,17 @@ window.addEventListener("load", function() {
                 col.obj.destroy();
                 this.p.vida--;
                 if (this.p.vida == 0) {
+                    this.p.lives--;
                     Q.audio.play("explosion_effect.mp3");
                     this.stage.insert(new Q.Explosion_P({ x: this.p.x, y: this.p.y - this.p.w / 2 }));
                     this.destroy();
+
+                    if(this.p.lives > 0){
+                        Q.clearStages();
+                        Q.stageScene("background", 0);
+                        Q.stageScene("level", 1);
+                        Q.stageScene("HUD", 2);
+                    }
                 }
             }
         }
@@ -284,9 +294,9 @@ window.addEventListener("load", function() {
                 gravity: 0
             });
 
-            //this.add("2d");
         },
         step: function(dt) {
+            this.p.vy -= 3;
             this.p.y += this.p.vy * dt;
 
             if (this.p.y > Q.height || this.p.y < 0 || this.p.x > Q.width || this.p.x < 0) {
@@ -307,6 +317,7 @@ window.addEventListener("load", function() {
         },
 
         step: function(dt) {
+            this.p.vy -= 1;
             if (this.p.direccion == "arriba")
                 this.p.y += this.p.vy * dt;
             else if (this.p.direccion == "abajo")
@@ -728,7 +739,9 @@ window.addEventListener("load", function() {
                 label: "Score: 0",
                 align: "left",
                 x: 0,
-                y: 0
+                y: 0,
+                color: "white",
+                family: "ARCADECLASSIC"
             });
 
             Q.state.on("change.score", this, "score");
@@ -739,12 +752,32 @@ window.addEventListener("load", function() {
         }
     });
 
+    Q.UI.Text.extend("Lives", {
+        init: function(p) {
+            this._super({
+                label: "R: 2",
+                align: "right",
+                x: 200,
+                y: 0,
+                color: "white",
+                family: "ARCADECLASSIC"
+            });
+
+            Q.state.on("change.lives", this, "lives");
+        },
+
+        lives: function(lives) {
+            this.p.label = "R: " + lives;
+        }
+    });
+
     Q.scene("HUD", function(stage) {
         var container = stage.insert(new Q.UI.Container({
             x: 10,
             y: 0
         }));
         stage.insert(new Q.Score(), container);
+        stage.insert(new Q.Lives(), container);
         container.fit(20);
     }, { stage: 2 });
 
