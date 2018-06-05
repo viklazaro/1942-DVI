@@ -14,7 +14,9 @@ window.addEventListener("load", function() {
         .enableSound();
 
     Q.scene("level1", function(stage) {
+        Q.audio.play("intro_sound.mp3");
         stage.insert(new Q.Player_Ini(this));
+
         /*
         stage.insert(new Q.Enemy1(this, 100, 400));
         stage.insert(new Q.Enemy2(this, 220, 50));
@@ -91,11 +93,11 @@ window.addEventListener("load", function() {
 
     Q.scene("background", function(stage) {
         stage.insert(new Q.Background(this));
-        Q.audio.play("music_main.mp3", { loop: true });
+        //Q.audio.play("music_main.mp3", { loop: true });
     });
 
     Q.load("levelCompleto.png, airplane.png, airplane.json, sprites.json, enemies.png, anim.png, anim.json, boss.png, boss.json, " +
-        "music_main.mp3, shot_effect.mp3, explosion_effect.mp3",
+        "music_main.mp3, shot_effect.mp3, explosion_effect.mp3, intro_sound.mp3",
         function() {
             Q.compileSheets("airplane.png", "airplane.json");
             Q.compileSheets("enemies.png", "sprites.json");
@@ -105,8 +107,10 @@ window.addEventListener("load", function() {
             Q.animations("player_anim", {
                 "stand": { frames: [0], rate: 1 / 10, loop: false },
                 "loop": { frames: [9, 10, 11, 15, 16], rate: 1/2, loop: false },
-                "up": { frames: [10, 11], rate: 1, loop: false },
-                "back": { frames: [12], rate: 1, loop: false }
+                "up": { frames: [10, 11], rate: 2, loop: false },
+                "back": { frames: [12], rate: 1, loop: false },
+                "down": { frames: [13, 16], rate: 1, loop: false },
+                "up2" : { frames: [10, 16], rate: 1, loop: false }
             });
 
             Q.animations("enemy1_anim", {
@@ -298,28 +302,40 @@ window.addEventListener("load", function() {
                 x: 125,
                 y: 435,
                 gravity: 0,
-                vy: 60,
-                back: false
+                vy: 70,
+                back: 2
             });
 
             this.add("animation");
         },
         step: function(dt) {
-            console.log(this.p.y);
-            this.play("stand");
-            
-            if(!this.p.back){
+            if(this.p.back !== 0){
+                this.play("stand");
+                
                 this.p.y -= this.p.vy * dt;
 
-                if(this.p.y > 345 && this.p.y < 355){
-                    this.play("up");
-                }else if (this.p.y < 345){
-                    this.p.back = true;
+                if(this.p.back !== 1){
+                    if(this.p.y > 345 && this.p.y < 355){
+                        this.play("up");
+                    }else if (this.p.y < 345){
+                        this.p.back = 0;
+                    }
+                }else{
+                    if(this.p.y > 410 && this.p.y < 405){
+                        this.play("up2");
+                    }
                 }
             }
             else{
                 this.play("back");
                 this.p.y += this.p.vy * dt;
+
+                if(this.p.y > 355 && this.p.y < 365){
+                    this.play("back");
+                }else if (this.p.y > 410 && this.p.y < 415){
+                    this.play("down");
+                    this.p.back = 1;
+                }
             }
         }
     })
