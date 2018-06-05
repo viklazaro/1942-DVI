@@ -14,12 +14,14 @@ window.addEventListener("load", function() {
         .enableSound();
 
     Q.scene("level1", function(stage) {
-        stage.insert(new Q.Player(this));
+        stage.insert(new Q.Player_Ini(this));
+        /*
         stage.insert(new Q.Enemy1(this, 100, 400));
         stage.insert(new Q.Enemy2(this, 220, 50));
         stage.insert(new Q.Enemy3(this, 0, 0));
         //stage.insert(new Q.Enemy7(this, 0, 240, true)); //Hacia la derecha
         stage.insert(new Q.Enemy7(this, 220, 240, false)); //Hacia la izquierda
+        */
     });
 
     var level1 = [
@@ -92,7 +94,7 @@ window.addEventListener("load", function() {
         Q.audio.play("music_main.mp3", { loop: true });
     });
 
-    Q.load("test.png, airplane.png, airplane.json, sprites.json, enemies.png, anim.png, anim.json, boss.png, boss.json, " +
+    Q.load("levelCompleto.png, airplane.png, airplane.json, sprites.json, enemies.png, anim.png, anim.json, boss.png, boss.json, " +
         "music_main.mp3, shot_effect.mp3, explosion_effect.mp3",
         function() {
             Q.compileSheets("airplane.png", "airplane.json");
@@ -102,7 +104,9 @@ window.addEventListener("load", function() {
 
             Q.animations("player_anim", {
                 "stand": { frames: [0], rate: 1 / 10, loop: false },
-                "loop": { frames: [9, 10, 11, 15, 16], rate: 1/2, loop: false }
+                "loop": { frames: [9, 10, 11, 15, 16], rate: 1/2, loop: false },
+                "up": { frames: [10, 11], rate: 1, loop: false },
+                "back": { frames: [12], rate: 1, loop: false }
             });
 
             Q.animations("enemy1_anim", {
@@ -166,10 +170,10 @@ window.addEventListener("load", function() {
         init: function(p) {
 
             this._super(p, {
-                asset: "test.png",
+                asset: "levelCompleto.png",
                 x: 110,
-                y: -240,
-                vy: 10
+                y: -750,
+                vy: 20
             });
         },
         step: function(dt) {
@@ -182,8 +186,8 @@ window.addEventListener("load", function() {
             this._super(p, {
                 sprite: "player_anim",
                 sheet: "player",
-                x: 110,
-                y: 400,
+                x: 125,
+                y: 435,
                 gravity: 0,
                 speed: 80,
                 vida: 3,
@@ -285,6 +289,40 @@ window.addEventListener("load", function() {
         }
 
     });
+
+    Q.Sprite.extend("Player_Ini", {
+        init: function(p) {
+            this._super(p, {
+                sprite: "player_anim",
+                sheet: "player",
+                x: 125,
+                y: 435,
+                gravity: 0,
+                vy: 60,
+                back: false
+            });
+
+            this.add("animation");
+        },
+        step: function(dt) {
+            console.log(this.p.y);
+            this.play("stand");
+            
+            if(!this.p.back){
+                this.p.y -= this.p.vy * dt;
+
+                if(this.p.y > 345 && this.p.y < 355){
+                    this.play("up");
+                }else if (this.p.y < 345){
+                    this.p.back = true;
+                }
+            }
+            else{
+                this.play("back");
+                this.p.y += this.p.vy * dt;
+            }
+        }
+    })
 
     Q.Sprite.extend("Bullet_Player", {
         init: function(p) {
@@ -780,5 +818,19 @@ window.addEventListener("load", function() {
         stage.insert(new Q.Lives(), container);
         container.fit(20);
     }, { stage: 2 });
+
+    Q.scene("mainTitle", function(stage) {
+        var container = stage.insert(new Q.UI.Container({ x: Q.width, y: Q.height }));
+        var button = container.insert(new Q.UI.Button({ x: -Q.width / 2, y: -Q.height / 2, fill: "#CCCCCC", asset: "1942.png" }));
+        //var label = container.insert(new Q.UI.Text({ x: 0, y: 10, label: "Press Enter or click to start", size: 18, color: "black" }));
+        button.on("click", function() {
+            Q.clearStages();
+            Q.stageScene("HUD");
+            Q.stageScene("level1");
+        });
+
+
+        container.fit(20);
+    });
 
 });
