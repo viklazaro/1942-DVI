@@ -29,7 +29,7 @@ window.addEventListener("load", function() {
     var level1 = [
         // Start,   End, Gap,  Type,   Override
         //[0, 500, 500, 'Boss', {x: 0, y:200}]
-        [0, 4000, 500, 'Enemy3', { x: 0, y: 0 }],
+        [3500, 5500, 500, 'Enemy3', { x: 0, y: 0 }],
         [6000, 13000, 1200, 'Enemy2', { x: 220, y: 50 }],
         [10000, 13000, 1200, 'Enemy1', { x: 70, y: 470 }],
         [14000, 17000, 1200, 'Enemy1', { x: 140, y: 470 }],
@@ -86,18 +86,19 @@ window.addEventListener("load", function() {
 
 
         });
-        stage.insert(new Q.Player(this));
+        Q.audio.stop();
+        Q.audio.play("intro_sound.mp3");
+        stage.insert(new Q.Player_Ini(this));
         Q.state.set("score", 0);
         Q.state.set("lives", 0)
     });
 
     Q.scene("background", function(stage) {
         stage.insert(new Q.Background(this));
-        //Q.audio.play("music_main.mp3", { loop: true });
     });
 
     Q.load("levelCompleto.png, airplane.png, airplane.json, sprites.json, enemies.png, anim.png, anim.json, boss.png, boss.json, " +
-        "music_main.mp3, shot_effect.mp3, explosion_effect.mp3, intro_sound.mp3",
+        "music_main.mp3, shot_effect.mp3, explosion_effect.mp3, intro_sound.mp3, 1942.png",
         function() {
             Q.compileSheets("airplane.png", "airplane.json");
             Q.compileSheets("enemies.png", "sprites.json");
@@ -160,12 +161,16 @@ window.addEventListener("load", function() {
             Q.animations("explosion_anim_player", {
                 "explosion_jugador": { frames: [0, 1, 2, 3, 4, 5], rate: 1 / 3, loop: false, trigger: "exploted" }
             });
-
+            /*
             Q.stageScene("background", 0);
             Q.stageScene("level", 1);
             Q.stageScene("HUD", 2);
+            */
+
+            Q.stageScene("mainTitle");
 
         });
+
     Q.SPRITE_NONE = 0;
     Q.SPRITE_PLAYER = 1;
     Q.SPRITE_ENEMY = 2;
@@ -283,6 +288,7 @@ window.addEventListener("load", function() {
                     this.destroy();
 
                     if(this.p.lives > 0){
+                        Q.state.inc("lives", -1);
                         Q.clearStages();
                         Q.stageScene("background", 0);
                         Q.stageScene("level", 1);
@@ -323,6 +329,10 @@ window.addEventListener("load", function() {
                 }else{
                     if(this.p.y > 410 && this.p.y < 405){
                         this.play("up2");
+                    }else if(this.p.y < 270 && this.p.y > 265){
+                        Q.audio.play("music_main.mp3", { loop: true });
+                        this.stage.insert(new Q.Player({ x: this.p.x, y: this.p.y}));
+                        this.destroy();
                     }
                 }
             }
@@ -838,14 +848,15 @@ window.addEventListener("load", function() {
     Q.scene("mainTitle", function(stage) {
         var container = stage.insert(new Q.UI.Container({ x: Q.width, y: Q.height }));
         var button = container.insert(new Q.UI.Button({ x: -Q.width / 2, y: -Q.height / 2, fill: "#CCCCCC", asset: "1942.png" }));
-        //var label = container.insert(new Q.UI.Text({ x: 0, y: 10, label: "Press Enter or click to start", size: 18, color: "black" }));
+        var label = stage.insert(new Q.UI.Text({ x: 110, y: 260, label: "Click  to  start", size: 15, color: "white", family: "ARCADECLASSIC" }));
+        Q.audio.play("music_main.mp3", { loop: true });
+
         button.on("click", function() {
             Q.clearStages();
-            Q.stageScene("HUD");
-            Q.stageScene("level1");
+            Q.stageScene("background", 0);
+            Q.stageScene("level", 1);
+            Q.stageScene("HUD", 2);
         });
-
-
         container.fit(20);
     });
 
