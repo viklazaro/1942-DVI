@@ -86,11 +86,10 @@ window.addEventListener("load", function() {
 
 
         });
+
         Q.audio.stop();
         Q.audio.play("intro_sound.mp3");
         stage.insert(new Q.Player_Ini(this));
-        Q.state.set("score", 0);
-        Q.state.set("lives", 0)
     });
 
     Q.scene("background", function(stage) {
@@ -161,11 +160,6 @@ window.addEventListener("load", function() {
             Q.animations("explosion_anim_player", {
                 "explosion_jugador": { frames: [0, 1, 2, 3, 4, 5], rate: 1 / 3, loop: false, trigger: "exploted" }
             });
-            /*
-            Q.stageScene("background", 0);
-            Q.stageScene("level", 1);
-            Q.stageScene("HUD", 2);
-            */
 
             Q.stageScene("mainTitle");
 
@@ -206,7 +200,7 @@ window.addEventListener("load", function() {
                 canFire: true,
                 isLooping: false,
                 loopTime: 0,
-                lives: 2
+                lifes: 2
             });
 
             this.add("2d, animation");
@@ -282,17 +276,17 @@ window.addEventListener("load", function() {
                 col.obj.destroy();
                 this.p.vida--;
                 if (this.p.vida == 0) {
-                    this.p.lives--;
+                    this.p.lifes--;
                     Q.audio.play("explosion_effect.mp3");
                     this.stage.insert(new Q.Explosion_P({ x: this.p.x, y: this.p.y - this.p.w / 2 }));
                     this.destroy();
 
-                    if(this.p.lives > 0){
-                        Q.state.inc("lives", -1);
+                    if(this.p.lifes > 0){
                         Q.clearStages();
                         Q.stageScene("background", 0);
                         Q.stageScene("level", 1);
                         Q.stageScene("HUD", 2);
+                        Q.state.inc("lifes", -1);
                     }
                 }
             }
@@ -816,10 +810,10 @@ window.addEventListener("load", function() {
         }
     });
 
-    Q.UI.Text.extend("Lives", {
+    Q.UI.Text.extend("Life", {
         init: function(p) {
             this._super({
-                label: "R: 2",
+                label: "R: " + Q.state.get("lifes"),
                 align: "right",
                 x: 200,
                 y: 0,
@@ -827,11 +821,11 @@ window.addEventListener("load", function() {
                 family: "ARCADECLASSIC"
             });
 
-            Q.state.on("change.lives", this, "lives");
+            Q.state.on("change.lifes", this, "life");
         },
 
-        lives: function(lives) {
-            this.p.label = "R: " + lives;
+        life: function(lifes) {
+            this.p.label = "R: " + lifes;
         }
     });
 
@@ -841,7 +835,7 @@ window.addEventListener("load", function() {
             y: 0
         }));
         stage.insert(new Q.Score(), container);
-        stage.insert(new Q.Lives(), container);
+        stage.insert(new Q.Life(), container);
         container.fit(20);
     }, { stage: 2 });
 
@@ -853,9 +847,14 @@ window.addEventListener("load", function() {
 
         button.on("click", function() {
             Q.clearStages();
+            Q.state.reset({
+                score: 0,
+                lifes: 2
+            });
             Q.stageScene("background", 0);
             Q.stageScene("level", 1);
             Q.stageScene("HUD", 2);
+            
         });
         container.fit(20);
     });

@@ -2,5 +2,7 @@
 	"explosion_enemy": {"sx": 164, "sy":4, "cols":1, "tilew": 15, "tileH":16, "frames": 6},
 	"explosion_player": {"sx": 0, "sy":26, "cols":0, "tilew": 33, "tileH":32, "frames": 6},
 	"bullet_player": {"sx": 137, "sy":5, "cols":1, "tilew": 23, "tileH":16, "frames": 1},
+	"simple_bullet_player": {"sx": 103, "sy":9, "cols":0, "tilew": 11, "tileH":10, "frames": 1},
+	"pow": {"sx":6, "sy":65, "cols":0, "tilew": 17, "tileH": 10, "frames": 7},
 	"bullet_enemy": {"sx": 123, "sy":15, "cols":1, "tilew": 4, "tileH":4, "frames": 1}
 }
