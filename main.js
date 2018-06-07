@@ -144,6 +144,13 @@ window.addEventListener("load", function() {
                 "down_left_2": { frames: [13, 14, 15], rate: 1, loop: false }
             });
 
+            Q.animations("pow_anim", {
+                "P1": { frames: [0], rate: 1/2, loop: false },
+                "P2": { frames: [1], rate: 1/3, loop: false },
+                "P3": { frames: [2], rate: 1/2, loop: false },
+                "P4": { frames: [3], rate: 1/2, loop: false }
+            })
+
             Q.animations("boss_anim", {
                 "down": { frames: [0], rate: 1 / 10, loop: false },
                 "stand": { frames: [0], rate: 1 / 10, loop: false }
@@ -199,6 +206,7 @@ window.addEventListener("load", function() {
                 fireTime: 0,
                 canFire: true,
                 isLooping: false,
+                pow: 0,
                 loopTime: 0,
                 lifes: 2
             });
@@ -259,7 +267,14 @@ window.addEventListener("load", function() {
         shoot: function() {
             if (this.p.canFire) {
                 this.p.canFire = false;
-                this.stage.insert(new Q.Bullet_Player({ x: this.p.x, y: this.p.y - this.p.h, vy: -100 }));
+
+                if(this.p.pow < 1){
+                    this.stage.insert(new Q.Simple_Bullet_Player({ x: this.p.x, y: this.p.y - this.p.h, vy: -100 }));
+                }
+                else{
+                    this.stage.insert(new Q.Bullet_Player({ x: this.p.x, y: this.p.y - this.p.h, vy: -100 }));
+                }
+
                 Q.audio.play("shot_effect.mp3");
             }
         },
@@ -270,6 +285,8 @@ window.addEventListener("load", function() {
                 this.play("loop");
             }
         },
+
+
 
         collision: function(col) {
             if (!this.p.isLooping && col.obj.isA("Bullet_Enemy")) {
@@ -289,6 +306,9 @@ window.addEventListener("load", function() {
                         Q.state.inc("lifes", -1);
                     }
                 }
+            }else if(col.obj.isA("Pow")){
+                col.obj.destroy();
+                this.p.pow++;
             }
         }
 
@@ -342,7 +362,22 @@ window.addEventListener("load", function() {
                 }
             }
         }
-    })
+    });
+
+    Q.Sprite.extend("Pow", {
+        init: function(p) {
+            this._super(p, {
+                sheet: "pow",
+                sprite: "pow_anim",
+                gravity: 0
+            });
+
+            this.add("animation");
+        },
+        step: function(dt) {
+            this.play("P1");
+        }
+    });
 
     Q.Sprite.extend("Bullet_Player", {
         init: function(p) {
@@ -351,17 +386,35 @@ window.addEventListener("load", function() {
                 sprite: "bullet_player",
                 gravity: 0
             });
-
         },
         step: function(dt) {
-            this.p.vy -= 3;
-            this.p.y += this.p.vy * dt;
+                this.p.vy -= 3;
+                this.p.y += this.p.vy * dt;
 
-            if (this.p.y > Q.height || this.p.y < 0 || this.p.x > Q.width || this.p.x < 0) {
-                this.destroy();
+                if (this.p.y > Q.height || this.p.y < 0 || this.p.x > Q.width || this.p.x < 0) {
+                    this.destroy();
+                }
             }
-        }
     });
+
+    Q.Sprite.extend("Simple_Bullet_Player", {
+        init: function(p) {
+            this._super(p, {
+                sheet: "simple_bullet_player",
+                sprite: "simple_bullet_player",
+                gravity: 0
+            });
+        },
+        step: function(dt) {
+                this.p.vy -= 3;
+                this.p.y += this.p.vy * dt;
+
+                if (this.p.y > Q.height || this.p.y < 0 || this.p.x > Q.width || this.p.x < 0) {
+                    this.destroy();
+                }
+            }
+    });
+
 
     Q.Sprite.extend("Bullet_Enemy", {
         init: function(p, dir) {
@@ -724,9 +777,14 @@ window.addEventListener("load", function() {
         extend: {
             onCollission: function() {
                 this.on("hit", function(col) {
-                    if (col.obj.isA("Bullet_Player")) {
+                    if (col.obj.isA("Bullet_Player") || col.obj.isA("Simple_Bullet_Player")) {
                         this.stage.insert(new Q.Explosion({ x: this.p.x, y: this.p.y - this.p.w / 2 })); //ESTO ANTES ESTABA COMENTADO
-                        Q.state.inc("score", 10);
+                        Q.state.inc("score", 50);
+
+                        if(Q.state.get("score") === 500){
+                            this.stage.insert(new Q.Pow({ x: this.p.x, y: this.p.y - this.p.w / 2 }));
+                        }
+
                         this.destroy();
                         col.obj.destroy();
                     } else if (col.obj.isA("Player")) {
