@@ -97,7 +97,7 @@ window.addEventListener("load", function() {
     });
 
     Q.load("levelCompleto.png, airplane.png, airplane.json, sprites.json, enemies.png, anim.png, anim.json, boss.png, boss.json, " +
-        "music_main.mp3, shot_effect.mp3, explosion_effect.mp3, intro_sound.mp3, 1942.png",
+        "music_main.mp3, shot_effect.mp3, explosion_effect.mp3, intro_sound.mp3, 1942.png, 1942gameOverAsset.png",
         function() {
             Q.compileSheets("airplane.png", "airplane.json");
             Q.compileSheets("enemies.png", "sprites.json");
@@ -297,13 +297,23 @@ window.addEventListener("load", function() {
                     this.stage.insert(new Q.Explosion_P({ x: this.p.x, y: this.p.y - this.p.w / 2 }));
                     this.destroy();
 
-                    if (this.p.lifes > 0) {
-                        Q.clearStages();
-                        Q.stageScene("background", 0);
-                        Q.stageScene("level", 1);
-                        Q.stageScene("HUD", 2);
-                        Q.state.inc("lifes", -1);
-                    }
+                    /**
+                     * Se utiliza setTimeout porque queremos que el juego siga corriendo
+                     * para que aparezca la animacion de la explosion/muerte del jugador.
+                     */
+                    setTimeout(function() {
+                        if (Q.state.get("lifes") > 0) {
+                            Q.clearStages();
+                            Q.stageScene("background", 0);
+                            Q.stageScene("level", 1);
+                            Q.stageScene("HUD", 2);
+                            Q.state.inc("lifes", -1);
+                        } else {
+                            Q.clearStages();
+                            Q.audio.stop();
+                            Q.stageScene("gameOverScene", 0);
+                        }
+                    }, 3000);
                 }
             } else if (col.obj.isA("Pow")) {
                 col.obj.destroy();
@@ -803,13 +813,23 @@ window.addEventListener("load", function() {
                         this.stage.insert(new Q.Explosion_P({ x: this.p.x, y: this.p.y - this.p.w / 2 })); //Hay que llamar a la animacion de la explosión
                         this.destroy();
                         col.obj.destroy();
-                        if (Q.state.get("lifes") > 0) {
-                            Q.clearStages();
-                            Q.stageScene("background", 0);
-                            Q.stageScene("level", 1);
-                            Q.stageScene("HUD", 2);
-                            Q.state.inc("lifes", -1);
-                        }
+                        /**
+                         * Se utiliza setTimeout porque queremos que el juego siga corriendo
+                         * para que aparezca la animacion de la explosion/muerte del jugador.
+                         */
+                        setTimeout(function() {
+                            if (Q.state.get("lifes") > 0) {
+                                Q.clearStages();
+                                Q.stageScene("background", 0);
+                                Q.stageScene("level", 1);
+                                Q.stageScene("HUD", 2);
+                                Q.state.inc("lifes", -1);
+                            } else {
+                                Q.clearStages();
+                                Q.audio.stop();
+                                Q.stageScene("gameOverScene", 0);
+                            }
+                        }, 3000);
                     }
                 });
             }
@@ -878,6 +898,8 @@ window.addEventListener("load", function() {
                 family: "ARCADECLASSIC"
             });
 
+            if (Q.state.get("score") !== undefined) this.p.label = "Score: " + Q.state.get("score");
+
             Q.state.on("change.score", this, "score");
         },
 
@@ -889,13 +911,15 @@ window.addEventListener("load", function() {
     Q.UI.Text.extend("Life", {
         init: function(p) {
             this._super({
-                label: "R: " + Q.state.get("lifes"),
+                label: "R: 0",
                 align: "right",
                 x: 200,
                 y: 0,
                 color: "white",
                 family: "ARCADECLASSIC"
             });
+
+            if (Q.state.get("lifes") !== undefined) this.p.label = "R: " + Q.state.get("lifes");
 
             Q.state.on("change.lifes", this, "life");
         },
@@ -933,6 +957,27 @@ window.addEventListener("load", function() {
 
         });
         container.fit(20);
+    });
+
+    Q.scene("gameOverScene", function(stage) {
+        Q.stageScene("HUD", 1);
+        var container = stage.insert(new Q.UI.Container({ x: Q.width, y: Q.height }));
+        var button = container.insert(new Q.UI.Button({ x: -Q.width / 2, y: -Q.height / 2, fill: "#CCCCCC", asset: "1942gameOverAsset.png" }));
+        var gameOverLabel = stage.insert(new Q.UI.Text({ x: 110, y: 160, label: "GAME OVER", size: 16, color: "white", family: "ARCADECLASSIC" }));
+        var startLabel = stage.insert(new Q.UI.Text({ x: 110, y: 260, label: "Click to restart", size: 15, color: "white", family: "ARCADECLASSIC" }));
+
+        button.on("click", function() {
+            Q.clearStages();
+            Q.state.reset({
+                score: 0,
+                lifes: 2
+            });
+            Q.stageScene("background", 0);
+            Q.stageScene("level", 1);
+            Q.stageScene("HUD", 2);
+
+        });
+        container.fit(50);
     });
 
 });
