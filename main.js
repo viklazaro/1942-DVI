@@ -106,11 +106,11 @@ window.addEventListener("load", function() {
 
             Q.animations("player_anim", {
                 "stand": { frames: [0], rate: 1 / 10, loop: false },
-                "loop": { frames: [9, 10, 11, 15, 16], rate: 1/2, loop: false },
+                "loop": { frames: [9, 10, 11, 15, 16], rate: 1 / 2, loop: false },
                 "up": { frames: [10, 11], rate: 2, loop: false },
                 "back": { frames: [12], rate: 1, loop: false },
                 "down": { frames: [13, 16], rate: 1, loop: false },
-                "up2" : { frames: [10, 16], rate: 1, loop: false }
+                "up2": { frames: [10, 16], rate: 1, loop: false }
             });
 
             Q.animations("enemy1_anim", {
@@ -145,10 +145,10 @@ window.addEventListener("load", function() {
             });
 
             Q.animations("pow_anim", {
-                "P1": { frames: [0], rate: 1/2, loop: false },
-                "P2": { frames: [1], rate: 1/3, loop: false },
-                "P3": { frames: [2], rate: 1/2, loop: false },
-                "P4": { frames: [3], rate: 1/2, loop: false }
+                "P1": { frames: [0], rate: 1 / 2, loop: false },
+                "P2": { frames: [1], rate: 1 / 3, loop: false },
+                "P3": { frames: [2], rate: 1 / 2, loop: false },
+                "P4": { frames: [3], rate: 1 / 2, loop: false }
             })
 
             Q.animations("boss_anim", {
@@ -220,11 +220,11 @@ window.addEventListener("load", function() {
         step: function(dt) {
             this.stage.collide(this);
 
-            if(!this.p.isLooping)
+            if (!this.p.isLooping)
                 this.play("stand");
-            else{
+            else {
                 this.p.loopTime += dt;
-                if(this.p.loopTime > 1.2){
+                if (this.p.loopTime > 1.2) {
                     this.p.isLooping = false;
                     this.p.loopTime = 0;
                 }
@@ -268,10 +268,9 @@ window.addEventListener("load", function() {
             if (this.p.canFire) {
                 this.p.canFire = false;
 
-                if(this.p.pow < 1){
+                if (this.p.pow < 1) {
                     this.stage.insert(new Q.Simple_Bullet_Player({ x: this.p.x, y: this.p.y - this.p.h, vy: -100 }));
-                }
-                else{
+                } else {
                     this.stage.insert(new Q.Bullet_Player({ x: this.p.x, y: this.p.y - this.p.h, vy: -100 }));
                 }
 
@@ -279,8 +278,8 @@ window.addEventListener("load", function() {
             }
         },
 
-        dodge: function(){
-            if(!this.p.isLooping){
+        dodge: function() {
+            if (!this.p.isLooping) {
                 this.p.isLooping = true;
                 this.play("loop");
             }
@@ -298,7 +297,7 @@ window.addEventListener("load", function() {
                     this.stage.insert(new Q.Explosion_P({ x: this.p.x, y: this.p.y - this.p.w / 2 }));
                     this.destroy();
 
-                    if(this.p.lifes > 0){
+                    if (this.p.lifes > 0) {
                         Q.clearStages();
                         Q.stageScene("background", 0);
                         Q.stageScene("level", 1);
@@ -306,7 +305,7 @@ window.addEventListener("load", function() {
                         Q.state.inc("lifes", -1);
                     }
                 }
-            }else if(col.obj.isA("Pow")){
+            } else if (col.obj.isA("Pow")) {
                 col.obj.destroy();
                 this.p.pow++;
             }
@@ -329,34 +328,33 @@ window.addEventListener("load", function() {
             this.add("animation");
         },
         step: function(dt) {
-            if(this.p.back !== 0){
+            if (this.p.back !== 0) {
                 this.play("stand");
-                
+
                 this.p.y -= this.p.vy * dt;
 
-                if(this.p.back !== 1){
-                    if(this.p.y > 345 && this.p.y < 355){
+                if (this.p.back !== 1) {
+                    if (this.p.y > 345 && this.p.y < 355) {
                         this.play("up");
-                    }else if (this.p.y < 345){
+                    } else if (this.p.y < 345) {
                         this.p.back = 0;
                     }
-                }else{
-                    if(this.p.y > 410 && this.p.y < 405){
+                } else {
+                    if (this.p.y > 410 && this.p.y < 405) {
                         this.play("up2");
-                    }else if(this.p.y < 270 && this.p.y > 265){
+                    } else if (this.p.y < 270 && this.p.y > 265) {
                         Q.audio.play("music_main.mp3", { loop: true });
-                        this.stage.insert(new Q.Player({ x: this.p.x, y: this.p.y}));
+                        this.stage.insert(new Q.Player({ x: this.p.x, y: this.p.y }));
                         this.destroy();
                     }
                 }
-            }
-            else{
+            } else {
                 this.play("back");
                 this.p.y += this.p.vy * dt;
 
-                if(this.p.y > 355 && this.p.y < 365){
+                if (this.p.y > 355 && this.p.y < 365) {
                     this.play("back");
-                }else if (this.p.y > 410 && this.p.y < 415){
+                } else if (this.p.y > 410 && this.p.y < 415) {
                     this.play("down");
                     this.p.back = 1;
                 }
@@ -388,13 +386,13 @@ window.addEventListener("load", function() {
             });
         },
         step: function(dt) {
-                this.p.vy -= 3;
-                this.p.y += this.p.vy * dt;
+            this.p.vy -= 3;
+            this.p.y += this.p.vy * dt;
 
-                if (this.p.y > Q.height || this.p.y < 0 || this.p.x > Q.width || this.p.x < 0) {
-                    this.destroy();
-                }
+            if (this.p.y > Q.height || this.p.y < 0 || this.p.x > Q.width || this.p.x < 0) {
+                this.destroy();
             }
+        }
     });
 
     Q.Sprite.extend("Simple_Bullet_Player", {
@@ -406,13 +404,13 @@ window.addEventListener("load", function() {
             });
         },
         step: function(dt) {
-                this.p.vy -= 3;
-                this.p.y += this.p.vy * dt;
+            this.p.vy -= 3;
+            this.p.y += this.p.vy * dt;
 
-                if (this.p.y > Q.height || this.p.y < 0 || this.p.x > Q.width || this.p.x < 0) {
-                    this.destroy();
-                }
+            if (this.p.y > Q.height || this.p.y < 0 || this.p.x > Q.width || this.p.x < 0) {
+                this.destroy();
             }
+        }
     });
 
 
@@ -744,12 +742,8 @@ window.addEventListener("load", function() {
         collision: function(col) {
             if (col.obj.isA("Bullet_Player")) {
                 if (!this.p.inmune)
-                    this.p.health -= 5;
+                    this.p.health -= 10;
                 if (this.p.health <= 0) {
-                    // this.stage.insert(new Q.Explosion_B({
-                    //     x: this.p.x,
-                    //     y: this.p.y - this.p.w / 2
-                    // }));
                     this.stage.insert(new Q.Explosion_P({ x: this.p.x, y: 200 }));
                     this.stage.insert(new Q.Explosion_P({ x: this.p.x + 40, y: 200 }));
                     this.stage.insert(new Q.Explosion_P({ x: this.p.x - 40, y: 200 }));
@@ -769,6 +763,23 @@ window.addEventListener("load", function() {
                     y: this.p.y - this.p.w / 2
                 }));
                 col.obj.destroy();
+            } else if (col.obj.isA("Simple_Bullet_Player")) {
+                if (!this.p.inmune)
+                    this.p.health -= 5;
+                if (this.p.health <= 0) {
+                    this.stage.insert(new Q.Explosion_P({ x: this.p.x, y: 200 }));
+                    this.stage.insert(new Q.Explosion_P({ x: this.p.x + 40, y: 200 }));
+                    this.stage.insert(new Q.Explosion_P({ x: this.p.x - 40, y: 200 }));
+                    this.stage.insert(new Q.Explosion_P({ x: this.p.x, y: (this.p.y - this.p.w / 2) + 40 }));
+                    this.stage.insert(new Q.Explosion_P({ x: this.p.x + 40, y: (this.p.y - this.p.w / 2) + 40 }));
+                    this.stage.insert(new Q.Explosion_P({ x: this.p.x - 40, y: (this.p.y - this.p.w / 2) + 40 }));
+                    this.stage.insert(new Q.Explosion_P({ x: this.p.x, y: (this.p.y - this.p.w / 2) + 80 }));
+                    this.stage.insert(new Q.Explosion_P({ x: this.p.x + 40, y: (this.p.y - this.p.w / 2) + 80 }));
+                    this.stage.insert(new Q.Explosion_P({ x: this.p.x - 40, y: (this.p.y - this.p.w / 2) + 80 }));
+
+                    this.destroy();
+                }
+                col.obj.destroy();
             }
         }
     });
@@ -781,7 +792,7 @@ window.addEventListener("load", function() {
                         this.stage.insert(new Q.Explosion({ x: this.p.x, y: this.p.y - this.p.w / 2 })); //ESTO ANTES ESTABA COMENTADO
                         Q.state.inc("score", 50);
 
-                        if(Q.state.get("score") === 500){
+                        if (Q.state.get("score") === 500) {
                             this.stage.insert(new Q.Pow({ x: this.p.x, y: this.p.y - this.p.w / 2 }));
                         }
 
@@ -792,6 +803,13 @@ window.addEventListener("load", function() {
                         this.stage.insert(new Q.Explosion_P({ x: this.p.x, y: this.p.y - this.p.w / 2 })); //Hay que llamar a la animacion de la explosión
                         this.destroy();
                         col.obj.destroy();
+                        if (Q.state.get("lifes") > 0) {
+                            Q.clearStages();
+                            Q.stageScene("background", 0);
+                            Q.stageScene("level", 1);
+                            Q.stageScene("HUD", 2);
+                            Q.state.inc("lifes", -1);
+                        }
                     }
                 });
             }
@@ -912,7 +930,7 @@ window.addEventListener("load", function() {
             Q.stageScene("background", 0);
             Q.stageScene("level", 1);
             Q.stageScene("HUD", 2);
-            
+
         });
         container.fit(20);
     });
