@@ -187,7 +187,8 @@ window.addEventListener("load", function() {
             });
         },
         step: function(dt) {
-            this.p.y += this.p.vy * dt;
+            if(this.p.y < 1200)
+                this.p.y += this.p.vy * dt;
         }
     });
 
@@ -220,8 +221,10 @@ window.addEventListener("load", function() {
         step: function(dt) {
             this.stage.collide(this);
 
-            if (!this.p.isLooping)
+            if (!this.p.isLooping) {
                 this.play("stand");
+                this.p.collisionMask = Q.SPRITE_DEFAULT;
+            }
             else {
                 this.p.loopTime += dt;
                 if (this.p.loopTime > 1.2) {
@@ -281,6 +284,7 @@ window.addEventListener("load", function() {
         dodge: function() {
             if (!this.p.isLooping) {
                 this.p.isLooping = true;
+                this.p.collisionMask = Q.SPRITE_NONE;
                 this.play("loop");
             }
         },
@@ -764,7 +768,12 @@ window.addEventListener("load", function() {
                     this.stage.insert(new Q.Explosion_P({ x: this.p.x + 40, y: (this.p.y - this.p.w / 2) + 80 }));
                     this.stage.insert(new Q.Explosion_P({ x: this.p.x - 40, y: (this.p.y - this.p.w / 2) + 80 }));
 
+                    /*Q.clearStages();
+                    Q.audio.stop();
+                    Q.stageScene("winScene", 0);*/
+
                     this.destroy();
+
                 }
                 col.obj.destroy();
             } else if (col.obj.isA("Player")) {
@@ -964,6 +973,27 @@ window.addEventListener("load", function() {
         var container = stage.insert(new Q.UI.Container({ x: Q.width, y: Q.height }));
         var button = container.insert(new Q.UI.Button({ x: -Q.width / 2, y: -Q.height / 2, fill: "#CCCCCC", asset: "1942gameOverAsset.png" }));
         var gameOverLabel = stage.insert(new Q.UI.Text({ x: 110, y: 160, label: "GAME OVER", size: 16, color: "white", family: "ARCADECLASSIC" }));
+        var startLabel = stage.insert(new Q.UI.Text({ x: 110, y: 260, label: "Click to restart", size: 15, color: "white", family: "ARCADECLASSIC" }));
+
+        button.on("click", function() {
+            Q.clearStages();
+            Q.state.reset({
+                score: 0,
+                lifes: 2
+            });
+            Q.stageScene("background", 0);
+            Q.stageScene("level", 1);
+            Q.stageScene("HUD", 2);
+
+        });
+        container.fit(50);
+    });
+
+    Q.scene("winScene", function(stage) {
+        Q.stageScene("HUD", 1);
+        var container = stage.insert(new Q.UI.Container({ x: Q.width, y: Q.height }));
+        var button = container.insert(new Q.UI.Button({ x: -Q.width / 2, y: -Q.height / 2, fill: "#CCCCCC", asset: "1942gameOverAsset.png" }));
+        var gameOverLabel = stage.insert(new Q.UI.Text({ x: 110, y: 160, label: "¡FELICIDADES! ¡HAS GANADO!", size: 16, color: "white", family: "ARCADECLASSIC" }));
         var startLabel = stage.insert(new Q.UI.Text({ x: 110, y: 260, label: "Click to restart", size: 15, color: "white", family: "ARCADECLASSIC" }));
 
         button.on("click", function() {
