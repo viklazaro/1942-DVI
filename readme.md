@@ -2,10 +2,10 @@
 
 Proyecto del juego 1942 realizado por:
 
-  -Jose Antonio Bernal
-  -Víctor García Rodríguez
-  -Milagros del Rocío Peña Quineche
-  -Víctor Reviejo Reviejo
+- Jose Antonio Bernal
+- Víctor García Rodríguez
+- Milagros del Rocío Peña Quineche
+- Víctor Reviejo Reviejo
   
 1942 es un juego perteneciente al género shoot 'em up, del estilo de los clásicos mars invaders y similares. Fue lanzado por Capcom para 
 recreativa en 1984. El juego se ambienta en la Guerra del Pacífico. El objetivo es llegar a Tokyo y destruir toda la flota aérea.
@@ -78,25 +78,25 @@ Además, de la lista de tareas que hay a continuación, todos los integrantes de
 ido surgiendo durante el desarrollo así como aportar en la documentación y la presentación que hubo el día 30 de mayo.
 
 Milagros:
-          * Json para los sprites.
-          * Movimientos de los enemigos.
-          * HUD.
-          * Componente default enemy.
-          * Animaciones.
-          * Power ups. 
+* Json para los sprites.
+* Movimientos de los enemigos.
+* HUD.
+* Componente default enemy.
+* Animaciones.
+* Power ups. 
 
 Jose:
-          * Pantalla de game over.
+* Pantalla de game over.
 
 Víctor Reviejo:
-          * Movimiento del background.
-          * Generador de enemigos.
+* Movimiento del background.
+* Generador de enemigos.
 
 Víctor García:
-          * Movimientos enemigos.
-          * Animaciones.
-          * Disparos de enemigos.
-          * Boss.
+* Movimientos enemigos.
+* Animaciones.
+* Disparos de enemigos.
+* Boss.
 
 Destacar, que el protagonista del juego ha sido desarrollado por todos los miembros del grupo, ya sea para corregir errores, añadir mejoras o extensiones del propio jugador.
 
