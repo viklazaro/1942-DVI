@@ -120,6 +120,7 @@ Milagros:
 
 Jose:
 * Pantalla de game over.
+* Boss.
 
 Víctor Reviejo:
 * Movimiento del background.
