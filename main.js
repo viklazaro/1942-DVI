@@ -1033,7 +1033,7 @@ window.addEventListener("load", function() {
         var gameOverLabel = stage.insert(new Q.UI.Text({ x: 110, y: 160, label: "¡FELICIDADES!", size: 16, color: "white", family: "ARCADECLASSIC" }));
         var gameOverLabel = stage.insert(new Q.UI.Text({ x: 110, y: 190, label: "¡HAS GANADO!", size: 16, color: "white", family: "ARCADECLASSIC" }));
         var startLabel = stage.insert(new Q.UI.Text({ x: 110, y: 260, label: "Click to restart", size: 15, color: "white", family: "ARCADECLASSIC" }));
-        var creditsLabel = stage.insert(new Q.UI.Text({ x: 110, y: 320, label: "Jose  Antonio  Bernal\nVictor  García  Rodriguez\nMilagros  Peña  Quineche\nVictor  Reviejo  Reviejo", size: 15, color: "white", family: "ARCADECLASSIC" }));
+        var creditsLabel = stage.insert(new Q.UI.Text({ x: 110, y: 320, label: "Creado por:\nJose  Antonio  Bernal\nVictor  García  Rodriguez\nMilagros  Peña  Quineche\nVictor  Reviejo  Reviejo", size: 15, color: "white", family: "ARCADECLASSIC" }));
 
 
         button.on("click", function() {
