@@ -56,7 +56,7 @@ window.addEventListener("load", function() {
 
             //   Start, End,  Gap, Type,   Override
             // [ 0,     4000, 500, 'Enemy3', { x: 0, y: 0 } ]
-            while ((currentWave = level1[idx]) &&
+            while ((currentWave = this.levelData[idx]) &&
                 (currentWave[0] < this.t + 2000)) {
                 // Check if we've passed the end time
                 if (this.t > currentWave[1]) {
@@ -768,9 +768,11 @@ window.addEventListener("load", function() {
                     this.stage.insert(new Q.Explosion_P({ x: this.p.x + 40, y: (this.p.y - this.p.w / 2) + 80 }));
                     this.stage.insert(new Q.Explosion_P({ x: this.p.x - 40, y: (this.p.y - this.p.w / 2) + 80 }));
 
-                    /*Q.clearStages();
-                    Q.audio.stop();
-                    Q.stageScene("winScene", 0);*/
+                    setTimeout(function() {
+                            Q.clearStages();
+                            Q.audio.stop();
+                            Q.stageScene("winScene", 0);
+                    }, 3000);
 
                     this.destroy();
 
@@ -795,6 +797,12 @@ window.addEventListener("load", function() {
                     this.stage.insert(new Q.Explosion_P({ x: this.p.x, y: (this.p.y - this.p.w / 2) + 80 }));
                     this.stage.insert(new Q.Explosion_P({ x: this.p.x + 40, y: (this.p.y - this.p.w / 2) + 80 }));
                     this.stage.insert(new Q.Explosion_P({ x: this.p.x - 40, y: (this.p.y - this.p.w / 2) + 80 }));
+
+                    setTimeout(function() {
+                        Q.clearStages();
+                        Q.audio.stop();
+                        Q.stageScene("winScene", 0);
+                    }, 3000);
 
                     this.destroy();
                 }
@@ -993,7 +1001,8 @@ window.addEventListener("load", function() {
         Q.stageScene("HUD", 1);
         var container = stage.insert(new Q.UI.Container({ x: Q.width, y: Q.height }));
         var button = container.insert(new Q.UI.Button({ x: -Q.width / 2, y: -Q.height / 2, fill: "#CCCCCC", asset: "1942gameOverAsset.png" }));
-        var gameOverLabel = stage.insert(new Q.UI.Text({ x: 110, y: 160, label: "¡FELICIDADES! ¡HAS GANADO!", size: 16, color: "white", family: "ARCADECLASSIC" }));
+        var gameOverLabel = stage.insert(new Q.UI.Text({ x: 110, y: 160, label: "¡FELICIDADES!", size: 16, color: "white", family: "ARCADECLASSIC" }));
+        var gameOverLabel = stage.insert(new Q.UI.Text({ x: 110, y: 190, label: "¡HAS GANADO!", size: 16, color: "white", family: "ARCADECLASSIC" }));
         var startLabel = stage.insert(new Q.UI.Text({ x: 110, y: 260, label: "Click to restart", size: 15, color: "white", family: "ARCADECLASSIC" }));
 
         button.on("click", function() {
