@@ -207,7 +207,7 @@ window.addEventListener("load", function() {
                 fireTime: 0,
                 canFire: true,
                 isLooping: false,
-                pow: 1,
+                pow: 0,
                 loopTime: 0,
                 lifes: 2
             });
@@ -490,7 +490,7 @@ window.addEventListener("load", function() {
 
             this.add("animation, defaultEnemy");
             this.onCollission();
-            this.powBomb();
+            this.on("powBomb", this, "powerUp");
 
         },
 
@@ -538,7 +538,7 @@ window.addEventListener("load", function() {
 
             this.add("animation, defaultEnemy");
             this.onCollission();
-            this.powBomb();
+            this.on("powBomb", this, "powerUp");
         },
 
         step: function(dt) {
@@ -577,7 +577,7 @@ window.addEventListener("load", function() {
 
             this.add("animation, defaultEnemy");
             this.onCollission();
-            this.powBomb();
+            this.on("powBomb", this, "powerUp");
         },
 
         step: function(dt) {
@@ -631,7 +631,7 @@ window.addEventListener("load", function() {
 
             this.add("animation, defaultEnemy");
             this.onCollission();
-            this.powBomb();
+            this.on("powBomb", this, "powerUp");
         },
 
         step: function(dt) {
@@ -731,7 +731,7 @@ window.addEventListener("load", function() {
                 collisionMask: Q.SPRITE_DEFAULT,
                 type: Q.SPRITE_ENEMY,
                 stand: false,
-                health: 60
+                health: 300
             });
             this.add("animation");
             this.on("hit", this, "collision");
@@ -829,11 +829,9 @@ window.addEventListener("load", function() {
     Q.component("defaultEnemy", {
         extend: {
             powBomb: function(){
-                this.on("powerUp", function(){
-                    this.stage.insert(new Q.Explosion({ x: this.p.x, y: this.p.y - this.p.w / 2 }));
-                    Q.state.inc("score", 75);
-                    this.destroy(); 
-                });               
+                this.stage.insert(new Q.Explosion({ x: this.p.x, y: this.p.y - this.p.w / 2 }));
+                Q.state.inc("score", 75);
+                this.destroy();               
             },
 
             onCollission: function() {
@@ -844,7 +842,7 @@ window.addEventListener("load", function() {
 
                         if (Q.state.get("score") === 500) {
                             this.stage.insert(new Q.Pow({ x: this.p.x, y: this.p.y - this.p.w / 2, nPow: 1}));
-                        }else if(Q.state.get("score") === 100){
+                        }else if(Q.state.get("score") === 1000){
                             this.stage.insert(new Q.Pow({ x: this.p.x, y: this.p.y - this.p.w / 2, nPow: 2}));
                         }
 
