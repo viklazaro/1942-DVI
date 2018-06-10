@@ -234,22 +234,6 @@ window.addEventListener("load", function() {
                 Q.stageScene("winScene", 0);
             }
 
-            if(this.p.tiempo > 0.5 && this.p.die){
-                
-                if (Q.state.get("lifes") > 0) {
-                    Q.clearStages();
-                    Q.stageScene("background", 0);
-                    Q.stageScene("level", 1);
-                    Q.stageScene("HUD", 2);
-                    Q.state.inc("lifes", -1);
-                } else {
-                    Q.clearStages();
-                    Q.audio.stop();
-                    Q.stageScene("gameOverScene", 0);
-                }
-                this.destroy();
-            }
-
             if (!this.p.isLooping) {
                 this.play("stand");
                 this.p.collisionMask = Q.SPRITE_DEFAULT;
@@ -324,7 +308,6 @@ window.addEventListener("load", function() {
             this.p.collisionMask = Q.SPRITE_NONE;
         },
 
-
         collision: function(col) {
             if (!this.p.isLooping && col.obj.isA("Bullet_Enemy")) {
                 col.obj.destroy();
@@ -333,8 +316,20 @@ window.addEventListener("load", function() {
                     this.p.lifes--;
                     Q.audio.play("explosion_effect.mp3");
                     this.stage.insert(new Q.Explosion_P({ x: this.p.x, y: this.p.y - this.p.w / 2 }));
-                    this.p.tiempo = 0;
-                    this.p.die = true;                   
+                    this.destroy();
+                    setTimeout(function() {
+                            if (Q.state.get("lifes") > 0) {
+                                Q.clearStages();
+                                Q.stageScene("background", 0);
+                                Q.stageScene("level", 1);
+                                Q.stageScene("HUD", 2);
+                                Q.state.inc("lifes", -1);
+                            } else {
+                                Q.clearStages();
+                                Q.audio.stop();
+                                Q.stageScene("gameOverScene", 0);
+                            }
+                    }, 3000);               
                 }
             } else if (col.obj.isA("Pow")) {
                 Q.audio.play("pow_effect.mp3");
@@ -867,7 +862,7 @@ window.addEventListener("load", function() {
                          * Se utiliza setTimeout porque queremos que el juego siga corriendo
                          * para que aparezca la animacion de la explosion/muerte del jugador.
                          */
-                         /*
+                         
                         setTimeout(function() {
                             if (Q.state.get("lifes") > 0) {
                                 Q.clearStages();
@@ -880,7 +875,7 @@ window.addEventListener("load", function() {
                                 Q.audio.stop();
                                 Q.stageScene("gameOverScene", 0);
                             }
-                        }, 3000);*/
+                        }, 3000);
                     }
                 });
             }
@@ -912,7 +907,7 @@ window.addEventListener("load", function() {
         init: function(p) {
             this._super(p, {
                 sheet: "explosion_player",
-                sprite: "explosion_anim_player"
+                sprite: "explosion_anim_player",
             });
 
             this.add("animation");
