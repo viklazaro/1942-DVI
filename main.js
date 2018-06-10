@@ -97,7 +97,7 @@ window.addEventListener("load", function() {
     });
 
     Q.load("levelCompleto.png, airplane.png, airplane.json, sprites.json, enemies.png, anim.png, anim.json, boss.png, boss.json, " +
-        "music_main.mp3, shot_effect.mp3, explosion_effect.mp3, intro_sound.mp3, 1942.png, 1942gameOverAsset.png",
+        "music_main.mp3, shot_effect.mp3, explosion_effect.mp3, intro_sound.mp3, 1942.png, 1942gameOverAsset.png, pow_effect.mp3",
         function() {
             Q.compileSheets("airplane.png", "airplane.json");
             Q.compileSheets("enemies.png", "sprites.json");
@@ -106,11 +106,11 @@ window.addEventListener("load", function() {
 
             Q.animations("player_anim", {
                 "stand": { frames: [0], rate: 1 / 10, loop: false },
-                "loop": { frames: [9, 10, 11, 15, 16], rate: 1 / 2, loop: false },
+                "loop": { frames: [10, 11, 15, 16], rate: 1, loop: false },
                 "up": { frames: [10, 11], rate: 2, loop: false },
-                "back": { frames: [12], rate: 1, loop: false },
-                "down": { frames: [13, 16], rate: 1, loop: false },
-                "up2": { frames: [10, 16], rate: 1, loop: false }
+                "back": { frames: [12], rate: 2, loop: false },
+                "down": { frames: [13, 16], rate: 2, loop: false },
+                "up2": { frames: [10, 16], rate: 2, loop: false }
             });
 
             Q.animations("enemy1_anim", {
@@ -207,7 +207,7 @@ window.addEventListener("load", function() {
                 fireTime: 0,
                 canFire: true,
                 isLooping: false,
-                pow: 0,
+                pow: 1,
                 loopTime: 0,
                 lifes: 2
             });
@@ -320,8 +320,19 @@ window.addEventListener("load", function() {
                     }, 3000);
                 }
             } else if (col.obj.isA("Pow")) {
+                Q.audio.play("pow_effect.mp3");
                 col.obj.destroy();
                 this.p.pow++;
+                if(this.p.pow == 2){
+                    var items = this.stage.items;
+                    for(var i=0,len= items.length; i<len; i++) {
+                        var cad = items[i]["__proto__"].className;
+                        if(cad.includes("Enemy") && !cad.includes("_")){
+                            var e = items[i];
+                            e.powBomb();
+                        }
+                    }
+                }
             }
         }
 
@@ -377,17 +388,25 @@ window.addEventListener("load", function() {
     });
 
     Q.Sprite.extend("Pow", {
-        init: function(p) {
+        init: function(p, t) {
             this._super(p, {
                 sheet: "pow",
                 sprite: "pow_anim",
-                gravity: 0
+                gravity: 0,
+                nPow: t
             });
 
             this.add("animation");
         },
         step: function(dt) {
-            this.play("P1");
+            switch(this.p.nPow) {
+                case 1:
+                    this.play("P1");
+                break;
+                case 2:
+                    this.play("P2");
+                break;
+            }
         }
     });
 
@@ -471,6 +490,7 @@ window.addEventListener("load", function() {
 
             this.add("animation, defaultEnemy");
             this.onCollission();
+            this.powBomb();
 
         },
 
@@ -518,6 +538,7 @@ window.addEventListener("load", function() {
 
             this.add("animation, defaultEnemy");
             this.onCollission();
+            this.powBomb();
         },
 
         step: function(dt) {
@@ -556,6 +577,7 @@ window.addEventListener("load", function() {
 
             this.add("animation, defaultEnemy");
             this.onCollission();
+            this.powBomb();
         },
 
         step: function(dt) {
@@ -609,6 +631,7 @@ window.addEventListener("load", function() {
 
             this.add("animation, defaultEnemy");
             this.onCollission();
+            this.powBomb();
         },
 
         step: function(dt) {
@@ -805,6 +828,14 @@ window.addEventListener("load", function() {
 
     Q.component("defaultEnemy", {
         extend: {
+            powBomb: function(){
+                this.on("powerUp", function(){
+                    this.stage.insert(new Q.Explosion({ x: this.p.x, y: this.p.y - this.p.w / 2 }));
+                    Q.state.inc("score", 75);
+                    this.destroy(); 
+                });               
+            },
+
             onCollission: function() {
                 this.on("hit", function(col) {
                     if (col.obj.isA("Bullet_Player") || col.obj.isA("Simple_Bullet_Player")) {
@@ -812,7 +843,9 @@ window.addEventListener("load", function() {
                         Q.state.inc("score", 50);
 
                         if (Q.state.get("score") === 500) {
-                            this.stage.insert(new Q.Pow({ x: this.p.x, y: this.p.y - this.p.w / 2 }));
+                            this.stage.insert(new Q.Pow({ x: this.p.x, y: this.p.y - this.p.w / 2, nPow: 1}));
+                        }else if(Q.state.get("score") === 100){
+                            this.stage.insert(new Q.Pow({ x: this.p.x, y: this.p.y - this.p.w / 2, nPow: 2}));
                         }
 
                         this.destroy();
@@ -843,7 +876,7 @@ window.addEventListener("load", function() {
                 });
             }
         }
-    })
+    });
 
     Q.Sprite.extend("Explosion", {
         init: function(p) {
