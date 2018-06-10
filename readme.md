@@ -24,33 +24,27 @@ En principio, nosotros desarrollaremos un nivel de dicho juego que incluya todos
 Marshall. Usaremos un gameplay de ejemplo, que se desarrolla en los dos primeros mundos, para sacar información acerca del juego como
 animaciones, tipos de enemigos y aguante de los mismos (cuantos impactos necesitan para morir), etc.
 
-1.  Objetivos del juego
+**1.  Objetivos del juego**
 
-Como hemos descrito anteriormente, el objetivo del juego es llegar a Tokyo y destruir toda la flota aéra japonesa que nos encotremos en
-nuestro camino. Los niveles se inician en un portaaviones y terminan en otro, por lo tanto en el juego se consigue una victoria si 
+   Como hemos descrito anteriormente, el objetivo del juego es llegar a Tokyo y destruir toda la flota aéra japonesa que nos encotremos en nuestro camino. Los niveles se inician en un portaaviones y terminan en otro, por lo tanto en el juego se consigue una victoria si 
 consigues llegar al final del nivel con vida y por el contrario el jugador pierde cuando su personaje es destruido por los aviones
 enemigos. El jugador consta de 3 vidas y para que sea destruido por los enemigos debe perderlas todas debido a impactos que recibe 
 por balas enemigas, en cambio si el jugador impacta de lleno con el sprite de un avión enemigo es muerte instantánea y por consiguiente
 el fin del juego.
 
-2.  Principales mecánicas
+**2.  Principales mecánicas**
 
-El jugador puede moverse por el escenario con las flechas de dirección del teclado y disparar con la barra espaciadora. El jugador tiene
-3 vidas, pierde una vida cada vez que recibe un disparo enemigo. Cuando pierde todas sus vidas el jugador es destruido y vuelve al
+   El jugador puede moverse por el escenario con las flechas de dirección del teclado y disparar con la barra espaciadora. El jugador tiene 3 vidas, pierde una vida cada vez que recibe un disparo enemigo. Cuando pierde todas sus vidas el jugador es destruido y vuelve al
 comienzo del nivel, esto puede ocurrir hasta en tres ocasiones si mueres de nuevo aparece una pantalla de "Game Over".
 
-A lo largo del nivel van apareciendo diversas oleadas de los distintos tipos de enemigos. Cuando destruyes a algunos de estos enemigos
-sueltan un power ups. Hay dos tipos de power up, uno que destruye a todos los enemigos que hay en pantalla y otro que le cambia al
-jugador el tipo de munición.
+   A lo largo del nivel van apareciendo diversas oleadas de los distintos tipos de enemigos. Cuando destruyes a algunos de estos enemigos sueltan un power ups. Hay dos tipos de power up, uno que destruye a todos los enemigos que hay en pantalla y otro que le cambia al jugador el tipo de munición.
 
-En cierto momento del nivel los enemigos normales dejan de aparecer y hace acto de presencia el boss final. El boss aparece por la parte
-izquierda de la pantalla y se mueve hasta que se coloca en el centro de la pantalla, durante este proceso el boss es inmune. Una vez
-se encuentra en el centro de la pantalla deja de moverse y comienza a disparar al jugador desde distintos puntos y no solo desde uno
+   En cierto momento del nivel los enemigos normales dejan de aparecer y hace acto de presencia el boss final. El boss aparece por la parte izquierda de la pantalla y se mueve hasta que se coloca en el centro de la pantalla, durante este proceso el boss es inmune. Una vez se encuentra en el centro de la pantalla deja de moverse y comienza a disparar al jugador desde distintos puntos y no solo desde uno
 como hacen los enemigos normales. Una vez 
 
-3.  Personajes
+**3.  Personajes**
 
-En nuestra versión del juego tenemos 3 tipos de personajes:
+   En nuestra versión del juego tenemos 3 tipos de personajes:
 
   * Enemigos normales: Estos enemigos mueren de un solo disparo del jugador o al impactar con este. De este tipo de enemigo se podría
   decir que hay varios "subtipos". Todos usan el mismo sprite pero se diferencian en como se mueven, algunos se mueven en línea recta
