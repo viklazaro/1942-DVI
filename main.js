@@ -63,6 +63,10 @@ window.addEventListener("load", function() {
                     remove.push(currentWave);
                 } else if (currentWave[0] < this.t) {
                     // Add an enemy from the current wave
+                    if(currentWave[3] === "Boss"){
+                        Q.audio.stop();
+                        Q.audio.play("music_boss.mp3");
+                    }
                     stage.loadAssets([
                         [currentWave[3], currentWave[4]]
                     ]);
@@ -98,7 +102,7 @@ window.addEventListener("load", function() {
 
     Q.load("levelCompleto.png, airplane.png, airplane.json, sprites.json, enemies.png, anim.png, anim.json, boss.png, boss.json, " +
         "music_main.mp3, shot_effect.mp3, explosion_effect.mp3, intro_sound.mp3, 1942.png, 1942gameOverAsset.png, pow_effect.mp3," +
-        "music_world_complete.mp3",
+        "music_world_complete.mp3, music_boss.mp3",
         function() {
             Q.compileSheets("airplane.png", "airplane.json");
             Q.compileSheets("enemies.png", "sprites.json");
@@ -742,7 +746,7 @@ window.addEventListener("load", function() {
                 collisionMask: Q.SPRITE_DEFAULT,
                 type: Q.SPRITE_ENEMY,
                 stand: false,
-                health: 20
+                health: 300
             });
             this.add("animation");
             this.on("hit", this, "collision");
