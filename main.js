@@ -16,7 +16,7 @@ window.addEventListener("load", function() {
     Q.scene("level1", function(stage) {
         Q.audio.play("intro_sound.mp3");
         stage.insert(new Q.Player_Ini(this));
-
+        stage.insert(new Q.Boss(this, 0, 200));
         /*
         stage.insert(new Q.Enemy1(this, 100, 400));
         stage.insert(new Q.Enemy2(this, 220, 50));
@@ -97,7 +97,8 @@ window.addEventListener("load", function() {
     });
 
     Q.load("levelCompleto.png, airplane.png, airplane.json, sprites.json, enemies.png, anim.png, anim.json, boss.png, boss.json, " +
-        "music_main.mp3, shot_effect.mp3, explosion_effect.mp3, intro_sound.mp3, 1942.png, 1942gameOverAsset.png, pow_effect.mp3",
+        "music_main.mp3, shot_effect.mp3, explosion_effect.mp3, intro_sound.mp3, 1942.png, 1942gameOverAsset.png, pow_effect.mp3," +
+        "music_world_complete.mp3",
         function() {
             Q.compileSheets("airplane.png", "airplane.json");
             Q.compileSheets("enemies.png", "sprites.json");
@@ -209,17 +210,45 @@ window.addEventListener("load", function() {
                 isLooping: false,
                 pow: 0,
                 loopTime: 0,
-                lifes: 2
+                lifes: 2,
+                isPlaying: true,
+                die: false,
+                tiempo: 0
             });
 
             this.add("2d, animation");
             Q.input.on("fire", this, "shoot");
             this.on("hit", this, "collision");
             Q.input.on("action", this, "dodge");
+            this.on("win", this, "win");
         },
 
         step: function(dt) {
             this.stage.collide(this);
+
+            this.p.tiempo += dt;
+
+            if(this.p.tiempo > 1.5 && !this.p.isPlaying){
+                this.destroy();
+                Q.clearStages();
+                Q.stageScene("winScene", 0);
+            }
+
+            if(this.p.tiempo > 0.5 && this.p.die){
+                
+                if (Q.state.get("lifes") > 0) {
+                    Q.clearStages();
+                    Q.stageScene("background", 0);
+                    Q.stageScene("level", 1);
+                    Q.stageScene("HUD", 2);
+                    Q.state.inc("lifes", -1);
+                } else {
+                    Q.clearStages();
+                    Q.audio.stop();
+                    Q.stageScene("gameOverScene", 0);
+                }
+                this.destroy();
+            }
 
             if (!this.p.isLooping) {
                 this.play("stand");
@@ -289,6 +318,11 @@ window.addEventListener("load", function() {
             }
         },
 
+        win: function(){
+            this.p.isPlaying = false;
+            this.p.tiempo = 0;
+            this.p.collisionMask = Q.SPRITE_NONE;
+        },
 
 
         collision: function(col) {
@@ -299,25 +333,8 @@ window.addEventListener("load", function() {
                     this.p.lifes--;
                     Q.audio.play("explosion_effect.mp3");
                     this.stage.insert(new Q.Explosion_P({ x: this.p.x, y: this.p.y - this.p.w / 2 }));
-                    this.destroy();
-
-                    /**
-                     * Se utiliza setTimeout porque queremos que el juego siga corriendo
-                     * para que aparezca la animacion de la explosion/muerte del jugador.
-                     */
-                    setTimeout(function() {
-                        if (Q.state.get("lifes") > 0) {
-                            Q.clearStages();
-                            Q.stageScene("background", 0);
-                            Q.stageScene("level", 1);
-                            Q.stageScene("HUD", 2);
-                            Q.state.inc("lifes", -1);
-                        } else {
-                            Q.clearStages();
-                            Q.audio.stop();
-                            Q.stageScene("gameOverScene", 0);
-                        }
-                    }, 3000);
+                    this.p.tiempo = 0;
+                    this.p.die = true;                   
                 }
             } else if (col.obj.isA("Pow")) {
                 Q.audio.play("pow_effect.mp3");
@@ -731,10 +748,11 @@ window.addEventListener("load", function() {
                 collisionMask: Q.SPRITE_DEFAULT,
                 type: Q.SPRITE_ENEMY,
                 stand: false,
-                health: 300
+                health: 20
             });
             this.add("animation");
             this.on("hit", this, "collision");
+            this.on("die", this, "die");
 
         },
 
@@ -781,24 +799,7 @@ window.addEventListener("load", function() {
                 if (!this.p.inmune)
                     this.p.health -= 10;
                 if (this.p.health <= 0) {
-                    this.stage.insert(new Q.Explosion_P({ x: this.p.x, y: 200 }));
-                    this.stage.insert(new Q.Explosion_P({ x: this.p.x + 40, y: 200 }));
-                    this.stage.insert(new Q.Explosion_P({ x: this.p.x - 40, y: 200 }));
-                    this.stage.insert(new Q.Explosion_P({ x: this.p.x, y: (this.p.y - this.p.w / 2) + 40 }));
-                    this.stage.insert(new Q.Explosion_P({ x: this.p.x + 40, y: (this.p.y - this.p.w / 2) + 40 }));
-                    this.stage.insert(new Q.Explosion_P({ x: this.p.x - 40, y: (this.p.y - this.p.w / 2) + 40 }));
-                    this.stage.insert(new Q.Explosion_P({ x: this.p.x, y: (this.p.y - this.p.w / 2) + 80 }));
-                    this.stage.insert(new Q.Explosion_P({ x: this.p.x + 40, y: (this.p.y - this.p.w / 2) + 80 }));
-                    this.stage.insert(new Q.Explosion_P({ x: this.p.x - 40, y: (this.p.y - this.p.w / 2) + 80 }));
-
-                    setTimeout(function() {
-                            Q.clearStages();
-                            Q.audio.stop();
-                            Q.stageScene("winScene", 0);
-                    }, 3000);
-
-                    this.destroy();
-
+                    this.die();
                 }
                 col.obj.destroy();
             } else if (col.obj.isA("Player")) {
@@ -811,26 +812,27 @@ window.addEventListener("load", function() {
                 if (!this.p.inmune)
                     this.p.health -= 5;
                 if (this.p.health <= 0) {
-                    this.stage.insert(new Q.Explosion_P({ x: this.p.x, y: 200 }));
-                    this.stage.insert(new Q.Explosion_P({ x: this.p.x + 40, y: 200 }));
-                    this.stage.insert(new Q.Explosion_P({ x: this.p.x - 40, y: 200 }));
-                    this.stage.insert(new Q.Explosion_P({ x: this.p.x, y: (this.p.y - this.p.w / 2) + 40 }));
-                    this.stage.insert(new Q.Explosion_P({ x: this.p.x + 40, y: (this.p.y - this.p.w / 2) + 40 }));
-                    this.stage.insert(new Q.Explosion_P({ x: this.p.x - 40, y: (this.p.y - this.p.w / 2) + 40 }));
-                    this.stage.insert(new Q.Explosion_P({ x: this.p.x, y: (this.p.y - this.p.w / 2) + 80 }));
-                    this.stage.insert(new Q.Explosion_P({ x: this.p.x + 40, y: (this.p.y - this.p.w / 2) + 80 }));
-                    this.stage.insert(new Q.Explosion_P({ x: this.p.x - 40, y: (this.p.y - this.p.w / 2) + 80 }));
-
-                    setTimeout(function() {
-                        Q.clearStages();
-                        Q.audio.stop();
-                        Q.stageScene("winScene", 0);
-                    }, 3000);
-
-                    this.destroy();
+                    this.die();
                 }
                 col.obj.destroy();
             }
+        },
+
+        die: function(){
+            this.stage.insert(new Q.Explosion_P({ x: this.p.x, y: 200 }));
+            this.stage.insert(new Q.Explosion_P({ x: this.p.x + 40, y: 200 }));
+            this.stage.insert(new Q.Explosion_P({ x: this.p.x - 40, y: 200 }));
+            this.stage.insert(new Q.Explosion_P({ x: this.p.x, y: (this.p.y - this.p.w / 2) + 40 }));
+            this.stage.insert(new Q.Explosion_P({ x: this.p.x + 40, y: (this.p.y - this.p.w / 2) + 40 }));
+            this.stage.insert(new Q.Explosion_P({ x: this.p.x - 40, y: (this.p.y - this.p.w / 2) + 40 }));
+            this.stage.insert(new Q.Explosion_P({ x: this.p.x, y: (this.p.y - this.p.w / 2) + 80 }));
+            this.stage.insert(new Q.Explosion_P({ x: this.p.x + 40, y: (this.p.y - this.p.w / 2) + 80 }));
+            this.stage.insert(new Q.Explosion_P({ x: this.p.x - 40, y: (this.p.y - this.p.w / 2) + 80 }));
+            Q.audio.stop();
+            Q.audio.play("music_world_complete.mp3");
+            var p = Q("Player").first();
+            p.win();
+            this.destroy();
         }
     });
 
@@ -865,6 +867,7 @@ window.addEventListener("load", function() {
                          * Se utiliza setTimeout porque queremos que el juego siga corriendo
                          * para que aparezca la animacion de la explosion/muerte del jugador.
                          */
+                         /*
                         setTimeout(function() {
                             if (Q.state.get("lifes") > 0) {
                                 Q.clearStages();
@@ -877,7 +880,7 @@ window.addEventListener("load", function() {
                                 Q.audio.stop();
                                 Q.stageScene("gameOverScene", 0);
                             }
-                        }, 3000);
+                        }, 3000);*/
                     }
                 });
             }
@@ -1035,6 +1038,8 @@ window.addEventListener("load", function() {
         var gameOverLabel = stage.insert(new Q.UI.Text({ x: 110, y: 160, label: "¡FELICIDADES!", size: 16, color: "white", family: "ARCADECLASSIC" }));
         var gameOverLabel = stage.insert(new Q.UI.Text({ x: 110, y: 190, label: "¡HAS GANADO!", size: 16, color: "white", family: "ARCADECLASSIC" }));
         var startLabel = stage.insert(new Q.UI.Text({ x: 110, y: 260, label: "Click to restart", size: 15, color: "white", family: "ARCADECLASSIC" }));
+        var creditsLabel = stage.insert(new Q.UI.Text({ x: 110, y: 320, label: "Jose  Antonio  Bernal\nVictor  García  Rodriguez\nMilagros  Peña  Quineche\nVictor  Reviejo  Reviejo", size: 15, color: "white", family: "ARCADECLASSIC" }));
+
 
         button.on("click", function() {
             Q.clearStages();
