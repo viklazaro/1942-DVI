@@ -405,19 +405,18 @@ window.addEventListener("load", function() {
                 sheet: "pow",
                 sprite: "pow_anim",
                 gravity: 0,
-                nPow: t
+                nPow: t,
+                tiempo: 0
             });
 
             this.add("animation");
         },
         step: function(dt) {
-            switch(this.p.nPow) {
-                case 1:
-                    this.play("P1");
-                break;
-                case 2:
-                    this.play("P2");
-                break;
+            this.p.tiempo += dt;
+            if(this.p.tiempo < 8){
+                this.play("P"+ this.p.nPow);
+            }else{
+                this.destroy();
             }
         }
     });
@@ -845,10 +844,11 @@ window.addEventListener("load", function() {
                         this.stage.insert(new Q.Explosion({ x: this.p.x, y: this.p.y - this.p.w / 2 })); //ESTO ANTES ESTABA COMENTADO
                         Q.state.inc("score", 50);
 
-                        if (Q.state.get("score") === 500) {
+                        if (Q.state.get("score") === 300) {
                             this.stage.insert(new Q.Pow({ x: this.p.x, y: this.p.y - this.p.w / 2, nPow: 1}));
-                        }else if(Q.state.get("score") === 1000){
-                            this.stage.insert(new Q.Pow({ x: this.p.x, y: this.p.y - this.p.w / 2, nPow: 2}));
+                        }else if((Q.state.get("score") % 500) === 0){
+                            var t = Math.floor(Math.random() * 4) + 1;
+                            this.stage.insert(new Q.Pow({ x: this.p.x, y: this.p.y - this.p.w / 2, nPow: t}));
                         }
 
                         this.destroy();
