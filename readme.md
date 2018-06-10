@@ -18,7 +18,7 @@ Su éxito fue tal que por entonces lo catapultó a todo tipo de plataformas como
 PlayStation2 y Xbox, aunque, actualmente existe una adaptación del videojuego para Android, la cual esta teniendo un rendimiento que se ve 
 comprometido en ciertos momentos con lag y parones repentinos.
 
-#DISEÑO DEL JUEGO
+## DISEÑO DEL JUEGO
 
 En principio, nosotros desarrollaremos un nivel de dicho juego que incluya todos los enemigos disponibles en el mundo de Midway y 
 Marshall. Usaremos un gameplay de ejemplo, que se desarrolla en los dos primeros mundos, para sacar información acerca del juego como
@@ -57,18 +57,57 @@ En nuestra versión del juego tenemos 3 tipos de personajes:
   ya sea de manera horizontal y vertical y otros realizan curvas y loopings.
   
   * Jugador: Consta de 3 vidas. Muere si impacta con un enemigo y pierde una vida cada vez que le golpea un disparo enemigo, si pierde
-  todas las vidas muere.
+  todas las vidas muere. Además, puede esquivar y disparar.
   
   * Boss: Tiene un gran tamaño comparado con los enemigos normales y también tiene más vida. Cuando aparece en el nivel es inmune
   hasta que se coloca en el centro de la pantalla y comienza a disparar al jugador. El Boss tiene más vida por lo que debe recibir
   bastantes disparos por parte del jugador para ser destruido. También dispara múltiples ráfagas con diferentes direcciones al contrario
   que el resto de personajes del juego.
 
-#DISEÑO DE LA IMPLEMENTACIÓN
+## DISEÑO DE LA IMPLEMENTACIÓN
 
-HAY QUE HABLAR DE LA ARQUITECTURA Y DE LOS COMPONENTES
+El juego consta de 3 escenas principales para su correcto desarrollo:
+* Background
 
-#REPARTO DE TAREAS
+  Esta escena esta dedicada exclusivamente para el fondo del juego, ya que tiene la peculiaridad de poder desplazarse sobre el eje Y     para dar la impresión de que, aunque, no se mueva al jugador, este sigue "volando".
+  
+* Level
+
+  Escena con su propio método *step*, el cual actúa como *Spawner* de los enemigos, esto se produce gracias a un conjunto de datos tipo  JSON en el que se especifica el momento de inicio y fin de ese tipo de enemigo, la frecuencia con la que aparecerá y el tipo y las coordenadas del mapa donde aparecerá. 
+  
+  El level inicializa las siguientes clases:
+  
+    * Player
+        * Clase que representa al protagonista.
+        * Utiliza los componente **2d** y **animation**.
+        * Controlado por el usuario gracias al módulo **Input**.
+        * Depende de las clases **Bullet_Player, Simple_Bullet_Player y Explosion_P**.
+    
+    * Enemigos
+        * Cada enemigo ha sido representado por una clase, **Enemy1, Enemy2, Enemy3 y Enemy7**.
+        * Utilizan los componentes **animation** y **defaultEnemy**, esta segunda proporciona 2 métodos, uno encargado de controlar las colisiones y otro que se activa debido a que el jugador ha activo un tipo de Power Up.
+        * Cada tipo de enemigo representa un movimiento diferente, ya sea horizontal, vertical, parabólico y circular.
+        * Depende de las clases **Bullet_Enemy y Explosion**.
+      
+     * Boss
+        * Clase que representa al jefe final del nivel.
+        * Utiliza el componente **animation**.
+        * La colisión la controlamos mediante "hit".
+        * Depende de las clases **Bullet_Enemy y Explosion_P**.
+        
+     * Pow
+        * Clase que representa los "Power Ups"
+        * Utiliza el componente **animation**.
+        * Solo puede colisionar con Player.
+        * Existen 2 tipos que producen que Player pueda cambiar de munición a otra más potente o bien que explote a todos los enemigos, exceptuando al Boss, que se encuentren en ese momento en escena.
+        * No consta de otras funciones aparte del "step" ya que la colisión la controla Player.
+        * Aparece un determinado tiempo sino se destruye.
+      
+* HUD
+
+   Escena encargada de almacenar la puntuación y las vidas, para ello existen los componentes de tipo text que son **Score** y **Lifes**, los cuales constan de un método para poder cambiar el valor actual, ya sean de la puntuación o de las vidas.
+
+## REPARTO DE TAREAS
 
 Durante el desarrollo del proyecto no hemos tenido un reparto de tareas como tal. Pero sí que teníamos una lista de tareas que teníamos
 que realizar y tener completas para la entrega final del proyecto por lo que cada uno de los participantes cada vez que nos poníamos a
@@ -93,7 +132,7 @@ Víctor Reviejo:
 * Generador de enemigos.
 
 Víctor García:
-* Movimientos enemigos.
+* Movimientos de los enemigos.
 * Animaciones.
 * Disparos de enemigos.
 * Boss.
@@ -101,7 +140,7 @@ Víctor García:
 Destacar, que el protagonista del juego ha sido desarrollado por todos los miembros del grupo, ya sea para corregir errores, añadir mejoras o extensiones del propio jugador.
 
 
-#FUENTES Y REFERENCIAS
+## FUENTES Y REFERENCIAS
 
 De esta página hemos sacado los recursos gráficos del juego -> https://www.spriters-resource.com/arcade/1942/ 
 Gameplay de ejemplo en el que nos hemos basado -> https://www.youtube.com/watch?v=AlXf77Hheeo
